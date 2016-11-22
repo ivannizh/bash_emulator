@@ -29,7 +29,7 @@ public:
         comands_[">"]         = &Root::mkFile;
     }
 
-    typedef void(Root::*funcPtr)(void);
+    typedef void(Root::*funcPtr)();
 
     void startWork(std::istream &is) {
         std::string line;
@@ -39,7 +39,7 @@ public:
             if (line.length() == 0)
                 continue;
             lParser.parse(line);
-            if(comands_.count(lParser.getComand()) == 1)
+            if(comands_.count(lParser.getComand()))
                 (this->*comands_[lParser.getComand()])();
             else
                 std::cout << "No command '" << lParser.getComand() << "' found" << std::endl;
@@ -52,27 +52,44 @@ private:
     std::vector<User> users_;
     std::vector<UserGroup> groups_;
     std::map<std::string,funcPtr> comands_;
+    enum descrType {FILE, CATALOG};
 
     LineParser lParser;
 
-    void mkFile     ( ) {
-         std::clog << "in mkFile func\n";
-         curDir_.creatFile(lParser.getArgs()[0]);
+    void mkFile () { newDescriptor(descrType::FILE);    }
+    void mkdir  () { newDescriptor(descrType::CATALOG); }
+
+    void newDescriptor(descrType t){
+        if (lParser.getParams().size() > 0){
+            std::cout << "Ignoring parametres" << std::endl;
+        }
+        for(const auto name: lParser.getArgs())
+            switch (t) {
+            case descrType::CATALOG:
+                curDir_.creatCatalog(name);
+                break;
+            case descrType::FILE:
+                curDir_.creatFile(name);
+                break;
+            default:
+                std::cerr << "ERROR in func Root::newDescriptor" << std::endl;
+                break;
+            }
     }
+
     void ls         ( ) {
-        std::clog << "in ls func\n";
+        std::clog << "in ls func" << std::endl;
         curDir_.showCatalog();
     }
 
-    void mkdir      ( ) { std::clog << "in mkdir func\n"; }
-    void addUser    ( ) { std::clog << "in addUser func\n"; }
-    void deleteUser ( ) { std::clog << "in deleteUser func\n"; }
-    void cp         ( ) { std::clog << "in cp func\n"; }
-    void rm         ( ) { std::clog << "in rm func\n"; }
-    void exit       ( ) { std::clog << "in exit func\n"; }
-    void showUsers  ( ) { std::clog << "in showUsers func\n"; }
-    void cd         ( ) { std::clog << "in cd func\n"; }
-    void mv         ( ) { std::clog << "in mv func\n"; }
+    void addUser    ( ) { std::clog << "in addUser func" << std::endl; }
+    void deleteUser ( ) { std::clog << "in deleteUser func" << std::endl; }
+    void cp         ( ) { std::clog << "in cp func" << std::endl; }
+    void rm         ( ) { std::clog << "in rm func" << std::endl; }
+    void exit       ( ) { std::clog << "in exit func" << std::endl; }
+    void showUsers  ( ) { std::clog << "in showUsers func" << std::endl; }
+    void cd         ( ) { std::clog << "in cd func" << std::endl; }
+    void mv         ( ) { std::clog << "in mv func" << std::endl; }
 
 
     void changeUser      ( ) {}

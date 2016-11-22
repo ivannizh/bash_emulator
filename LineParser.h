@@ -20,14 +20,14 @@ public:
         parseLine(str);
     }
 
-    std::string getComand() const;
-
-    std::vector<std::string> getArgs() const;
+    const std::string getComand() const;
+    const std::vector<std::string> getArgs() const;
+    const std::vector<std::pair<std::string, std::string> > getParams() const;
 
 private:
     void parseLine(std::string line);
 
-//    std::string line_;
+    //    std::string line_;
     std::string comand_;
     std::vector<std::pair<std::string, std::string>> params_;
     std::vector<std::string> args_;

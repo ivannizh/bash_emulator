@@ -26,7 +26,17 @@ public:
     FilesTable& operator= (const FilesTable &&) const { throw std::runtime_error("Write func in FilesTable"); }
 
     void addDescr    ( Descriptor *desc, const std::string &name) {
-        files_.push_back(fileDescr(name, desc));
+        std::string tmp = name;
+        if(tmp.back() == '/')
+            tmp.erase(name.length()-1, 1);
+
+        for (const auto file:files_)
+            if(file.first == tmp){
+                std::cout << "cannot create file/directory ‘" << tmp << "’: File exists" << std::endl;
+                return;
+            }
+
+        files_.push_back(fileDescr(tmp, desc));
         return;
     }
 

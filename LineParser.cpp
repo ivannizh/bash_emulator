@@ -11,8 +11,6 @@ std::string trimLine(const std::string &str){
 
 void LineParser::parseLine(std::string line) {
 
-//    std::string line = line_;
-
     const std::regex reCommand("^[^ ]+");
     const std::regex reParams(" (--|-)[\\w\\.\\/]+ [\\w\\.\\/]+| (--|-)[\\w\\.\\/-]+");
     const std::regex reArgs(" [\\w\\.\\/:*-]+");
@@ -40,26 +38,30 @@ void LineParser::parseLine(std::string line) {
         line.erase(line.find(match[0]), match[0].length());
     }
 
-        std::clog << "command :\n     " << comand_ << std::endl;
 
-        std::clog << "params :\n";
-        for(auto param: params_)
-            std::clog << "     " << param.first << param.second << std::endl;
+    std::clog <<"\n\n\n\nNew command:\n\n";
+    std::clog << "command :\n     " << comand_ << std::endl;
 
-        std::clog << "args :\n";
-        for(auto arg: args_)
-            std::clog << "     " << arg << std::endl;
+    std::clog << "params :\n";
+    for(auto param: params_)
+        std::clog << "     <" << param.first << "> <" << param.second << ">" << std::endl;
 
-        std::clog << "line : " << line << std::endl;
+    std::clog << "args :\n";
+    for(auto arg: args_)
+        std::clog << "     " << arg << std::endl;
+
+    std::clog << "line : " << line << std::endl;
 
 }
 
-std::vector<std::string> LineParser::getArgs() const
-{
+const std::vector<std::pair<std::string, std::string> > LineParser::getParams() const {
+    return params_;
+}
+
+const std::vector<std::string> LineParser::getArgs() const {
     return args_;
 }
 
-std::string LineParser::getComand() const
-{
+const std::string LineParser::getComand() const {
     return comand_;
 }

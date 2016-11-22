@@ -19,6 +19,9 @@ public:
     void showInfo   ( ) const;
     void open ( int mod ) {}
     void deleteFile ( ) {}
+
+//    enum descrType {FILE, CATALOG};
+
     virtual ~Descriptor() {}
 
 protected: 
