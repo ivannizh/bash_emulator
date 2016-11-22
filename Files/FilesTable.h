@@ -3,16 +3,38 @@
 
 #include <iostream>
 #include <vector>
+#include <stdexcept>
 
 #include "Descriptor.h"
 
 class FilesTable { // КОПИРУЙЮЩИЙ КОНСТРУКТОР
 public: 
-    FilesTable() {}
+    typedef std::pair<std::string, Descriptor*> fileDescr;
 
-    FilesTable(const FilesTable &t) {}
+    FilesTable(Descriptor* desc) { // const ??
+        files_.push_back(fileDescr("." , desc));
+        files_.push_back(fileDescr("..", desc));
+    }
 
-    void addFile    ( const Descriptor &desc  ) {}
+    FilesTable(const FilesTable &t) { throw std::runtime_error("Write func in FilesTable"); }
+    FilesTable(const FilesTable &&t) { throw std::runtime_error("Write func in FilesTable"); }
+
+    FilesTable& operator= (const FilesTable &)  { throw std::runtime_error("Write func in FilesTable"); }
+    FilesTable& operator= (const FilesTable &&) { throw std::runtime_error("Write func in FilesTable"); }
+
+    FilesTable& operator= (const FilesTable &)  const { throw std::runtime_error("Write func in FilesTable"); }
+    FilesTable& operator= (const FilesTable &&) const { throw std::runtime_error("Write func in FilesTable"); }
+
+    void addDescr    ( Descriptor *desc, const std::string &name) {
+        files_.push_back(fileDescr(name, desc));
+        return;
+    }
+
+    void showTable() const {
+        for(const auto line: files_)
+            std::cout << line.first << std::endl;
+    }
+
     void deleteFile ( const std::string &name ) {}
     Descriptor* getFile(std::string name);
 
@@ -23,8 +45,7 @@ public:
 
 
 private: 
-    std::vector<std::pair<std::string, Descriptor*>> files_;
-    // продумать создание указателя на этот каталог и на родителя
+    std::vector<fileDescr> files_;
 };
 
 #endif //_FILESTABLE_H

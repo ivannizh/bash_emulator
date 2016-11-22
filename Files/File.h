@@ -6,6 +6,8 @@
 class File: public Descriptor {
 public: 
     File() {}
+
+//    Descriptor* makeCopy() {}
     
     void makeReadable    ( ) {}
     void makeUnReadable  ( ) {}

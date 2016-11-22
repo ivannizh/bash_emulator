@@ -9,9 +9,9 @@ std::string trimLine(const std::string &str){
     return tmp;
 }
 
-void LineParser::parseLine() {
+void LineParser::parseLine(std::string line) {
 
-    std::string line = line_;
+//    std::string line = line_;
 
     const std::regex reCommand("^[^ ]+");
     const std::regex reParams(" (--|-)[\\w\\.\\/]+ [\\w\\.\\/]+| (--|-)[\\w\\.\\/-]+");
@@ -40,18 +40,23 @@ void LineParser::parseLine() {
         line.erase(line.find(match[0]), match[0].length());
     }
 
-        qDebug() << "command :\n     " << QString::fromStdString(comand_);
+        std::clog << "command :\n     " << comand_ << std::endl;
 
-        qDebug() << "params :";
+        std::clog << "params :\n";
         for(auto param: params_)
-            qDebug() << "     " << QString::fromStdString(param.first) << QString::fromStdString(param.second);
+            std::clog << "     " << param.first << param.second << std::endl;
 
-        qDebug() << "args :";
+        std::clog << "args :\n";
         for(auto arg: args_)
-            qDebug() << "     " << QString::fromStdString(arg);
+            std::clog << "     " << arg << std::endl;
 
-        qDebug() << "line : " << QString::fromStdString(line);
+        std::clog << "line : " << line << std::endl;
 
+}
+
+std::vector<std::string> LineParser::getArgs() const
+{
+    return args_;
 }
 
 std::string LineParser::getComand() const

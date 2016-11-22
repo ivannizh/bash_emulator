@@ -12,14 +12,14 @@ public:
 
     Descriptor() {}
 
-    virtual Descriptor* makeCopy() = 0;
+//    virtual Descriptor* makeCopy() = 0;
 
     void addPer     ( int perm ) {}
     void remPer     ( int perm ) {}
     void showInfo   ( ) const;
     void open ( int mod ) {}
     void deleteFile ( ) {}
-    virtual ~Descriptor();
+    virtual ~Descriptor() {}
 
 protected: 
     User user_;

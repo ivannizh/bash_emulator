@@ -20,7 +20,7 @@ private:
 
 class UserGroup {
 public:
-    UserGroup();
+    UserGroup() {}
 
     void addUser    ( const std::string &name )    {}
     void deleteUser ( const std::string &name )    {}
