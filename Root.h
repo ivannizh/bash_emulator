@@ -5,27 +5,32 @@
 #include <vector>
 #include <stdexcept>
 
-#include "User.h"
+#include "UserControl.h"
 //#include "Files/File.h"
 #include "Files/Catalog.h"
 #include "LineParser.h"
 //#include "CommandArray.h"
 
 class Root {
-public: 
-    Root() : curDir_(rootDir_){
+public:
+    Root() : rootDir_(1), curDir_(rootDir_), curUserId_(0){
 
-        comands_["showusers"] = &Root::showUsers;
-        comands_["adduser"]   = &Root::addUser;
-        comands_["deluser"]   = &Root::deleteUser;
         comands_["touch"]     = &Root::mkFile;
         comands_["mkdir"]     = &Root::mkdir;
+        comands_["logout"]    = &Root::logOut;
+        comands_["addu"]      = &Root::addUser;
+        comands_["delu"]      = &Root::deleteUser;
         comands_["exit"]      = &Root::exit;
+        comands_["delg"]      = &Root::deleteGroup;
+        comands_["shu"]       = &Root::showUsers;
+        comands_["shg"]       = &Root::showGroups;
         comands_["cp"]        = &Root::cp;
         comands_["rm"]        = &Root::rm;
         comands_["cd"]        = &Root::cd;
         comands_["mv"]        = &Root::mv;
         comands_["ls"]        = &Root::ls;
+        comands_["lo"]        = &Root::logOut;
+        comands_["e"]         = &Root::exit;
         comands_[">"]         = &Root::mkFile;
     }
 
@@ -34,23 +39,36 @@ public:
     void startWork(std::istream &is) {
         std::string line;
         while(true){
-            line = "";
-            std::getline(is, line);
-            if (line.length() == 0)
-                continue;
-            lParser.parse(line);
-            if(comands_.count(lParser.getComand()))
-                (this->*comands_[lParser.getComand()])();
-            else
-                std::cout << "No command '" << lParser.getComand() << "' found" << std::endl;
+            if(!curUserId_){
+                std::cout << "Login: ";
+                std::string name;
+                std::cin >> name;
+                int id = uControl.getUserIdByName(name);
+                if(!id) {
+                    std::cout << "Incorrect user name" << std::endl;
+                    continue;
+                }
+                std::cout << "Welcome " << name << std::endl;
+                curUserId_ = id;
+            } else {
+                line = "";
+                std::getline(is, line);
+                if (line.length() == 0)
+                    continue;
+                lParser.parse(line);
+                if(comands_.count(lParser.getComand()))
+                    (this->*comands_[lParser.getComand()])();
+                else
+                    std::cout << "No command '" << lParser.getComand() << "' found" << std::endl;
+            }
         }
     }
-private: 
-    User curUser_;
+private:
+    int curUserId_;
     Catalog rootDir_; // не удалять
     Catalog& curDir_; // не удалять
-    std::vector<User> users_;
-    std::vector<UserGroup> groups_;
+    UserControl uControl;
+
     std::map<std::string,funcPtr> comands_;
     enum descrType {FILE, CATALOG};
 
@@ -60,16 +78,16 @@ private:
     void mkdir  () { newDescriptor(descrType::CATALOG); }
 
     void newDescriptor(descrType t){
-        if (lParser.getParams().size() > 0){
+        if (lParser.getParamsSize() > 0)
             std::cout << "Ignoring parametres" << std::endl;
-        }
+
         for(const auto name: lParser.getArgs())
             switch (t) {
             case descrType::CATALOG:
-                curDir_.creatCatalog(name);
+                curDir_.creatCatalog(name, curUserId_);
                 break;
             case descrType::FILE:
-                curDir_.creatFile(name);
+                curDir_.creatFile(name, curUserId_);
                 break;
             default:
                 std::cerr << "ERROR in func Root::newDescriptor" << std::endl;
@@ -77,19 +95,69 @@ private:
             }
     }
 
-    void ls         ( ) {
-        std::clog << "in ls func" << std::endl;
+    void ls ( ) {
         curDir_.showCatalog();
     }
 
-    void addUser    ( ) { std::clog << "in addUser func" << std::endl; }
-    void deleteUser ( ) { std::clog << "in deleteUser func" << std::endl; }
-    void cp         ( ) { std::clog << "in cp func" << std::endl; }
-    void rm         ( ) { std::clog << "in rm func" << std::endl; }
-    void exit       ( ) { std::clog << "in exit func" << std::endl; }
-    void showUsers  ( ) { std::clog << "in showUsers func" << std::endl; }
-    void cd         ( ) { std::clog << "in cd func" << std::endl; }
-    void mv         ( ) { std::clog << "in mv func" << std::endl; }
+    void addUser    ( ) {
+        std::string group = lParser.getParam("g");
+        std::vector<std::string> names  = lParser.getArgs();
+
+        if (lParser.getParamsSize() > 0){
+            std::cout << "Ignoring other parametres" << std::endl;
+        }
+
+        for(const std::string name: names)
+            uControl.addUser(name, group);
+    }
+    void deleteUser ( ) {
+        std::vector<std::string> names = lParser.getArgs();
+
+        if (lParser.getParamsSize() > 0)
+            std::cout << "Ignoring parametres" << std::endl;
+        for(const std::string &name: names)
+            uControl.deleteUser(name);
+    }
+    void deleteGroup ( ) {
+        std::vector<std::string> names = lParser.getArgs();
+
+        if (lParser.getParamsSize() > 0)
+            std::cout << "Ignoring parametres" << std::endl;
+        for(const std::string &name: names)
+            uControl.deleteGroup(name);
+    }
+    void cp         ( ) {}
+    void rm         ( ) {}
+    void exit       ( ) {
+        std::exit(0);
+    }
+    void logOut () {
+        std::cout << "Good bye" << std::endl;
+        curUserId_ = 0;
+    }
+
+    void showUsers  ( ) {
+        bool showGroups = lParser.getParam("g") == "\n";
+
+        if (lParser.getArgsSize() > 0)
+            std::cout << "Ignoring arguments" << std::endl;
+        if (lParser.getParamsSize() > 0)
+            std::cout << "Ignoring parametres" << std::endl;
+
+        uControl.showUsers(showGroups);
+    }
+    void showGroups  ( ) {
+        bool showUsers = lParser.getParam("u") == "\n";
+
+        if (lParser.getArgsSize() > 0)
+            std::cout << "Ignoring arguments" << std::endl;
+        if (lParser.getParamsSize() > 0)
+            std::cout << "Ignoring parametres" << std::endl;
+
+        uControl.showGroups(showUsers);
+    }
+    void cd         ( ) {}
+    void mv         ( ) {}
 
 
     void changeUser      ( ) {}

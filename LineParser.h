@@ -22,7 +22,30 @@ public:
 
     const std::string getComand() const;
     const std::vector<std::string> getArgs() const;
-    const std::vector<std::pair<std::string, std::string> > getParams() const;
+    int getParamsSize() const {
+        return params_.size();
+    }
+
+    int getArgsSize(){
+        return args_.size();
+    }
+
+
+    std::string getParam(const std::string &p){
+
+        for (auto i = params_.begin(); i != params_.end(); i++)
+            if (i->first == p){
+                std::string tmp = i->second;
+                params_.erase(i);
+                i--;
+
+                if (tmp == "")
+                    tmp = "\n";
+
+                return tmp;
+            }
+        return "";
+    }
 
 private:
     void parseLine(std::string line);

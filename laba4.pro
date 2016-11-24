@@ -4,7 +4,6 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += main.cpp \
-    User.cpp \
     Root.cpp \
     Date.cpp \
     LineParser.cpp \
@@ -12,10 +11,10 @@ SOURCES += main.cpp \
     Files/Descriptor.cpp \
     Files/File.cpp \
     Files/FilesTable.cpp \
-    Files/Permission.cpp
+    Files/Permission.cpp \
+    UserControl.cpp
 
 HEADERS += \
-    User.h \
     Root.h \
     Date.h \
     Files/Catalog.h \
@@ -23,4 +22,5 @@ HEADERS += \
     Files/File.h \
     Files/FilesTable.h \
     Files/Permission.h \
-    LineParser.h
+    LineParser.h \
+    UserControl.h

@@ -10,17 +10,16 @@
 
 class Catalog: public Descriptor {
 public: 
-    Catalog() : fTable_(this) {}
+    Catalog(int userId) : fTable_(this), Descriptor(userId) {}
 
-    void creatFile ( const std::string &name ) {
-        fTable_.addDescr(new File(), name);
+    void creatFile (const std::string &name, int userId) {
+        fTable_.addDescr(new File(userId), name);
     }
-    void creatCatalog ( const std::string &name ) {
-        fTable_.addDescr(new Catalog(), name);
+    void creatCatalog (const std::string &name, int userId) {
+        fTable_.addDescr(new Catalog(userId), name);
     }
-    
-//    Descriptor* makeCopy() {}
-    void showCatalog  ( ) const {
+
+    void showCatalog  () const {
         fTable_.showTable();
     }
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}

@@ -4,10 +4,12 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
+#include <iomanip>
 
 #include "Descriptor.h"
+#include "../UserControl.h"
 
-class FilesTable { // КОПИРУЙЮЩИЙ КОНСТРУКТОР
+class FilesTable {
 public: 
     typedef std::pair<std::string, Descriptor*> fileDescr;
 
@@ -16,15 +18,11 @@ public:
         files_.push_back(fileDescr("..", desc));
     }
 
-    FilesTable(const FilesTable &t) { throw std::runtime_error("Write func in FilesTable"); }
-    FilesTable(const FilesTable &&t) { throw std::runtime_error("Write func in FilesTable"); }
+    FilesTable(const FilesTable &t) { throw std::runtime_error("Write func1 in FilesTable"); }
+    FilesTable(const FilesTable &&t) { throw std::runtime_error("Write func2 in FilesTable"); }
 
-    FilesTable& operator= (const FilesTable &)  { throw std::runtime_error("Write func in FilesTable"); }
-    FilesTable& operator= (const FilesTable &&) { throw std::runtime_error("Write func in FilesTable"); }
-
-    FilesTable& operator= (const FilesTable &)  const { throw std::runtime_error("Write func in FilesTable"); }
-    FilesTable& operator= (const FilesTable &&) const { throw std::runtime_error("Write func in FilesTable"); }
-
+    FilesTable& operator= (const FilesTable &)  { throw std::runtime_error("Write func3 in FilesTable"); }
+    FilesTable& operator= (const FilesTable &&) { throw std::runtime_error("Write func4 in FilesTable"); }
     void addDescr    ( Descriptor *desc, const std::string &name) {
         std::string tmp = name;
         if(tmp.back() == '/')
@@ -41,8 +39,11 @@ public:
     }
 
     void showTable() const {
-        for(const auto line: files_)
-            std::cout << line.first << std::endl;
+        for(const auto line: files_){
+            std::cout << std::setw(10) << line.first << "  ";
+            line.second->showInfo();
+            std::cout << std::endl;
+        }
     }
 
     void deleteFile ( const std::string &name ) {}
@@ -54,7 +55,7 @@ public:
     ~FilesTable() {}
 
 
-private: 
+private:
     std::vector<fileDescr> files_;
 };
 

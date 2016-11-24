@@ -5,7 +5,7 @@
 
 class File: public Descriptor {
 public: 
-    File() {}
+    File(int userId) : Descriptor(userId) {}
 
 //    Descriptor* makeCopy() {}
     

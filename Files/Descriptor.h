@@ -4,19 +4,20 @@
 #include <iostream>
 
 #include "../Date.h"
-#include "../User.h"
 #include "Permission.h"
 
 class Descriptor {
 public: 
 
-    Descriptor() {}
+    Descriptor(int userId) : userId_(userId) {}
 
 //    virtual Descriptor* makeCopy() = 0;
 
     void addPer     ( int perm ) {}
     void remPer     ( int perm ) {}
-    void showInfo   ( ) const;
+    void showInfo   ( ) const {
+        std::cout << userId_ << std::endl;
+    }
     void open ( int mod ) {}
     void deleteFile ( ) {}
 
@@ -25,8 +26,8 @@ public:
     virtual ~Descriptor() {}
 
 protected: 
-    User user_;
-    UserGroup group_;
+    int userId_;
+    int groupId_;
     Date created_;
     Date changed_;
     Permission permissoin_;
