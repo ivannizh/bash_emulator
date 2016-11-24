@@ -38,10 +38,10 @@ public:
         return;
     }
 
-    void showTable() const {
+    void showTable(const UserControl &uControl) const {
         for(const auto line: files_){
             std::cout << std::setw(10) << line.first << "  ";
-            line.second->showInfo();
+            line.second->showInfo(uControl);
             std::cout << std::endl;
         }
     }

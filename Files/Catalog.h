@@ -7,6 +7,7 @@
 #include "Descriptor.h"
 #include "FilesTable.h"
 #include "File.h"
+#include "UserControl.h"
 
 class Catalog: public Descriptor {
 public: 
@@ -19,8 +20,8 @@ public:
         fTable_.addDescr(new Catalog(userId), name);
     }
 
-    void showCatalog  () const {
-        fTable_.showTable();
+    void showCatalog (const UserControl &uControl) const {
+        fTable_.showTable(uControl);
     }
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
 //    void reName       ( const std::string &fileName, const std::string &newName ) {}

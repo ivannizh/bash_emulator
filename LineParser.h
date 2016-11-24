@@ -13,7 +13,6 @@ public:
     LineParser() : comand_("") { }
 
     void parse(const std::string &str){
-//        line_ = str;
         comand_ = "";
         params_.resize(0);
         args_.resize(0);
@@ -50,7 +49,6 @@ public:
 private:
     void parseLine(std::string line);
 
-    //    std::string line_;
     std::string comand_;
     std::vector<std::pair<std::string, std::string>> params_;
     std::vector<std::string> args_;

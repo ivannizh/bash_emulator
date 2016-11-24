@@ -5,6 +5,7 @@
 
 #include "../Date.h"
 #include "Permission.h"
+#include "../UserControl.h"
 
 class Descriptor {
 public: 
@@ -15,7 +16,7 @@ public:
 
     void addPer     ( int perm ) {}
     void remPer     ( int perm ) {}
-    void showInfo   ( ) const {
+    void showInfo   ( const UserControl &uControl ) const {
         std::cout << userId_ << std::endl;
     }
     void open ( int mod ) {}

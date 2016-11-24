@@ -6,10 +6,8 @@
 #include <stdexcept>
 
 #include "UserControl.h"
-//#include "Files/File.h"
 #include "Files/Catalog.h"
 #include "LineParser.h"
-//#include "CommandArray.h"
 
 class Root {
 public:
@@ -77,27 +75,9 @@ private:
     void mkFile () { newDescriptor(descrType::FILE);    }
     void mkdir  () { newDescriptor(descrType::CATALOG); }
 
-    void newDescriptor(descrType t){
-        if (lParser.getParamsSize() > 0)
-            std::cout << "Ignoring parametres" << std::endl;
+    void newDescriptor(descrType t);
 
-        for(const auto name: lParser.getArgs())
-            switch (t) {
-            case descrType::CATALOG:
-                curDir_.creatCatalog(name, curUserId_);
-                break;
-            case descrType::FILE:
-                curDir_.creatFile(name, curUserId_);
-                break;
-            default:
-                std::cerr << "ERROR in func Root::newDescriptor" << std::endl;
-                break;
-            }
-    }
-
-    void ls ( ) {
-        curDir_.showCatalog();
-    }
+    void ls ( );
 
     void addUser    ( ) {
         std::string group = lParser.getParam("g");
