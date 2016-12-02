@@ -5,7 +5,7 @@
 
 class File: public Descriptor {
 public: 
-    File(int userId) : Descriptor(userId) {}
+    File(int userId, const UserControl& uCrtl) : Descriptor(userId, false, uCrtl) {}
 
 //    Descriptor* makeCopy() {}
     

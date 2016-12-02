@@ -8,25 +8,24 @@
 #include "../UserControl.h"
 
 class Descriptor {
-public: 
-
-    Descriptor(int userId) : userId_(userId) {}
+public:
+    Descriptor ( int userId, bool isDrive, const UserControl& uCtrl) : userId_(userId), uControl_(uCtrl),
+        groupId_(uControl_.getGroupIdByName(uControl_.getUserNameById(userId))),
+        permissoin_(isDrive) {}
 
 //    virtual Descriptor* makeCopy() = 0;
 
-    void addPer     ( int perm ) {}
-    void remPer     ( int perm ) {}
-    void showInfo   ( const UserControl &uControl ) const {
-        std::cout << userId_ << std::endl;
+    void changePerm ( const std::string fileName, int perm ) { permissoin_.changePerm(perm); }
+    void showInfo ( ) const {
+        std::cout << permissoin_ << "  " << uControl_.getUserNameById(userId_) << "  " << uControl_.getGroupNameById(groupId_) << "  ";
     }
     void open ( int mod ) {}
     void deleteFile ( ) {}
 
-//    enum descrType {FILE, CATALOG};
-
-    virtual ~Descriptor() {}
+    virtual ~Descriptor ( ) {}
 
 protected: 
+    const UserControl& uControl_;
     int userId_;
     int groupId_;
     Date created_;

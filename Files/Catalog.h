@@ -11,17 +11,18 @@
 
 class Catalog: public Descriptor {
 public: 
-    Catalog(int userId) : fTable_(this), Descriptor(userId) {}
+    Catalog ( int userId, const UserControl& uCtrl ) : fTable_(this, this), Descriptor(userId, true, uCtrl) { }
+    Catalog ( int userId, Catalog* parent, const UserControl& uCtrl ) : fTable_(this, parent), Descriptor(userId, true, uCtrl) {}
 
-    void creatFile (const std::string &name, int userId) {
-        fTable_.addDescr(new File(userId), name);
+    void creatFile ( const std::string &name, int userId ) {
+        fTable_.addDescr(new File(userId, uControl_), name);
     }
-    void creatCatalog (const std::string &name, int userId) {
-        fTable_.addDescr(new Catalog(userId), name);
+    void creatCatalog ( const std::string &name, int userId ) {
+        fTable_.addDescr(new Catalog(userId, this, uControl_), name);
     }
 
-    void showCatalog (const UserControl &uControl) const {
-        fTable_.showTable(uControl);
+    void showCatalog () const {
+        fTable_.showTable();
     }
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
 //    void reName       ( const std::string &fileName, const std::string &newName ) {}
@@ -33,6 +34,8 @@ public:
 //    void showInfo ( ) const {}
 private:
     FilesTable fTable_;
+
+
 };
 
 #endif //_CATALOG_H

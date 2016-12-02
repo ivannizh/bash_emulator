@@ -9,9 +9,7 @@ class BaseUser
 {
 public:
     BaseUser() {}
-    int getId() const {
-        return id;
-    }
+
     void addId(int newId) {
         for (const auto &id: ids_)
             if (id == newId) {
@@ -40,7 +38,6 @@ public:
         return ids_;
     }
 protected:
-    int id;
     std::vector<int> ids_;
 };
 
@@ -50,28 +47,11 @@ public:
 
     }
 
-    Info& operator+ (int id){
-        buser_.addId(id);
-        return *this;
-    }
-
-    Info& operator+= (int id){
-        buser_.addId(id);
-        return *this;
-    }
-    Info& operator- (int id){
-        buser_.deleteId(id);
-        return *this;
-    }
-
-    Info& operator-= (int id){
-        buser_.deleteId(id);
-        return *this;
-    }
-
-    const BaseUser& operator() () const{
-        return buser_;
-    }
+    Info& operator+  ( int id ) { buser_.addId(id);    return *this; }
+    Info& operator+= ( int id ) { buser_.addId(id);    return *this; }
+    Info& operator-  ( int id ) { buser_.deleteId(id); return *this; }
+    Info& operator-= ( int id ) { buser_.deleteId(id); return *this; }
+    const BaseUser& operator ()( ) const { return buser_; }
 
     std::string name() const;
     int id() const;

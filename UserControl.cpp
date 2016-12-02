@@ -53,6 +53,9 @@ void UserControl::addUser(const std::__cxx11::string &name, const std::__cxx11::
         }
 
     users_.push_back(name);
+    groups_.push_back(name);
+    users_.back() += groups_.back().id();
+    groups_.back() += users_.back().id();
     std::cout << "User '" << name << "' was created" << std::endl;
 
     if (groupName != ""){

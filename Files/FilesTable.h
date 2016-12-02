@@ -13,17 +13,17 @@ class FilesTable {
 public: 
     typedef std::pair<std::string, Descriptor*> fileDescr;
 
-    FilesTable(Descriptor* desc) { // const ??
+    FilesTable ( Descriptor* desc, Descriptor* parent ) { // const ??
         files_.push_back(fileDescr("." , desc));
-        files_.push_back(fileDescr("..", desc));
+        files_.push_back(fileDescr("..", parent));
     }
 
-    FilesTable(const FilesTable &t) { throw std::runtime_error("Write func1 in FilesTable"); }
-    FilesTable(const FilesTable &&t) { throw std::runtime_error("Write func2 in FilesTable"); }
+    FilesTable ( const FilesTable &t )  { throw std::runtime_error("Write func1 in FilesTable"); }
+    FilesTable ( const FilesTable &&t ) { throw std::runtime_error("Write func2 in FilesTable"); }
 
-    FilesTable& operator= (const FilesTable &)  { throw std::runtime_error("Write func3 in FilesTable"); }
-    FilesTable& operator= (const FilesTable &&) { throw std::runtime_error("Write func4 in FilesTable"); }
-    void addDescr    ( Descriptor *desc, const std::string &name) {
+    FilesTable& operator= ( const FilesTable & )  { throw std::runtime_error("Write func3 in FilesTable"); }
+    FilesTable& operator= ( const FilesTable && ) { throw std::runtime_error("Write func4 in FilesTable"); }
+    void addDescr    ( Descriptor *desc, const std::string &name ) {
         std::string tmp = name;
         if(tmp.back() == '/')
             tmp.erase(name.length()-1, 1);
@@ -38,21 +38,21 @@ public:
         return;
     }
 
-    void showTable(const UserControl &uControl) const {
+    void showTable ( ) const {
         for(const auto line: files_){
-            std::cout << std::setw(10) << line.first << "  ";
-            line.second->showInfo(uControl);
+            line.second->showInfo();
+            std::cout << line.first;
             std::cout << std::endl;
         }
     }
 
     void deleteFile ( const std::string &name ) {}
-    Descriptor* getFile(std::string name);
+    Descriptor* getFile ( std::string name );
 
 
-    void reName (const std::string &oldName, const std::string &newName);
+    void reName ( const std::string &oldName, const std::string &newName );
 
-    ~FilesTable() {}
+    ~FilesTable ( ) {}
 
 
 private:

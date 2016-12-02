@@ -11,26 +11,7 @@
 
 class Root {
 public:
-    Root() : rootDir_(1), curDir_(rootDir_), curUserId_(0){
-
-        comands_["touch"]     = &Root::mkFile;
-        comands_["mkdir"]     = &Root::mkdir;
-        comands_["logout"]    = &Root::logOut;
-        comands_["addu"]      = &Root::addUser;
-        comands_["delu"]      = &Root::deleteUser;
-        comands_["exit"]      = &Root::exit;
-        comands_["delg"]      = &Root::deleteGroup;
-        comands_["shu"]       = &Root::showUsers;
-        comands_["shg"]       = &Root::showGroups;
-        comands_["cp"]        = &Root::cp;
-        comands_["rm"]        = &Root::rm;
-        comands_["cd"]        = &Root::cd;
-        comands_["mv"]        = &Root::mv;
-        comands_["ls"]        = &Root::ls;
-        comands_["lo"]        = &Root::logOut;
-        comands_["e"]         = &Root::exit;
-        comands_[">"]         = &Root::mkFile;
-    }
+    Root();
 
     typedef void(Root::*funcPtr)();
 
@@ -41,7 +22,7 @@ public:
                 std::cout << "Login: ";
                 std::string name;
                 std::cin >> name;
-                int id = uControl.getUserIdByName(name);
+                int id = uControl_.getUserIdByName(name);
                 if(!id) {
                     std::cout << "Incorrect user name" << std::endl;
                     continue;
@@ -61,25 +42,26 @@ public:
             }
         }
     }
+
 private:
+    UserControl uControl_;
     int curUserId_;
     Catalog rootDir_; // не удалять
     Catalog& curDir_; // не удалять
-    UserControl uControl;
 
     std::map<std::string,funcPtr> comands_;
     enum descrType {FILE, CATALOG};
 
     LineParser lParser;
 
-    void mkFile () { newDescriptor(descrType::FILE);    }
-    void mkdir  () { newDescriptor(descrType::CATALOG); }
+    void mkFile ( ) { Root::newDescriptor(descrType::FILE);   }
+    void mkdir  ( ) { Root::newDescriptor(descrType::CATALOG); }
 
     void newDescriptor(descrType t);
 
     void ls ( );
 
-    void addUser    ( ) {
+    void addUser ( ) {
         std::string group = lParser.getParam("g");
         std::vector<std::string> names  = lParser.getArgs();
 
@@ -88,15 +70,21 @@ private:
         }
 
         for(const std::string name: names)
-            uControl.addUser(name, group);
+            uControl_.addUser(name, group);
     }
+    
+    void chmod ( ) {
+        if (lParser.getParamsSize() > 0)
+            std::cout << "Ignoring parametres" << std::endl;
+    }
+    
     void deleteUser ( ) {
         std::vector<std::string> names = lParser.getArgs();
 
         if (lParser.getParamsSize() > 0)
             std::cout << "Ignoring parametres" << std::endl;
         for(const std::string &name: names)
-            uControl.deleteUser(name);
+            uControl_.deleteUser(name);
     }
     void deleteGroup ( ) {
         std::vector<std::string> names = lParser.getArgs();
@@ -104,7 +92,7 @@ private:
         if (lParser.getParamsSize() > 0)
             std::cout << "Ignoring parametres" << std::endl;
         for(const std::string &name: names)
-            uControl.deleteGroup(name);
+            uControl_.deleteGroup(name);
     }
     void cp         ( ) {}
     void rm         ( ) {}
@@ -124,7 +112,7 @@ private:
         if (lParser.getParamsSize() > 0)
             std::cout << "Ignoring parametres" << std::endl;
 
-        uControl.showUsers(showGroups);
+        uControl_.showUsers(showGroups);
     }
     void showGroups  ( ) {
         bool showUsers = lParser.getParam("u") == "\n";
@@ -134,7 +122,7 @@ private:
         if (lParser.getParamsSize() > 0)
             std::cout << "Ignoring parametres" << std::endl;
 
-        uControl.showGroups(showUsers);
+        uControl_.showGroups(showUsers);
     }
     void cd         ( ) {}
     void mv         ( ) {}
