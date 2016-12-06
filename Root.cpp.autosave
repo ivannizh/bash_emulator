@@ -43,3 +43,53 @@ void Root::newDescriptor(Root::descrType t){
 void Root::ls() {
     curDir_->showCatalog();
 }
+
+void Root::addUser() {
+    std::string group = lParser.getParam("g");
+    std::vector<std::string> names  = lParser.getArgs();
+    
+    
+    for(const std::string name: names)
+        uControl_.addUser(name, group);
+}
+
+void Root::deleteUser() {
+    std::vector<std::string> names = lParser.getArgs();
+    
+    for(const std::string &name: names)
+        uControl_.deleteUser(name);
+}
+
+void Root::deleteGroup() {
+    std::vector<std::string> names = lParser.getArgs();
+    
+    for(const std::string &name: names)
+        uControl_.deleteGroup(name);
+}
+
+void Root::logOut() {
+    std::cout << "Good bye" << std::endl;
+    curUserId_ = 0;
+}
+
+void Root::showUsers() {
+    bool showGroups = lParser.getParam("g") == "\n";
+    
+    uControl_.showUsers(showGroups);
+}
+
+void Root::showGroups() {
+    bool showUsers = lParser.getParam("u") == "\n";
+    
+    uControl_.showGroups(showUsers);
+}
+
+void Root::cd() {
+    Catalog* cat = curDir_->getCatalog(lParser.getArgs()[0]);
+    if(cat == curDir_ || cat == nullptr)
+        std::cout << "No such directory was found" << std::endl;
+    else
+        curDir_ = cat;
+    
+    
+}

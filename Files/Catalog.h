@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <typeinfo>
 
 #include "Descriptor.h"
 #include "FilesTable.h"
@@ -24,6 +25,27 @@ public:
     void showCatalog () const {
         fTable_.showTable();
     }
+
+//    Catalog& operator= (const Catalog& c){
+//        fTable_ = c.fTable_;
+//    }
+//    Catalog& operator= (Catalog&& c){
+//        if(&c != this)
+//            fTable_ = c.fTable_;
+//    }
+
+    Catalog* getCatalog(const std::string &name) throw (std::bad_cast){
+
+        try {
+            Catalog* cat = dynamic_cast<Catalog*>(fTable_.getFile(name));
+            return cat;
+        }
+        catch (const std::bad_cast& r) {
+            int a = 5;
+            return dynamic_cast<Catalog*>(fTable_.getCurDir());
+        }
+    }
+
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
 //    void reName       ( const std::string &fileName, const std::string &newName ) {}
 //    void deleteFile   ( const std::string &fileName )   {}
