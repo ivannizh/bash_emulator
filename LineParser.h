@@ -7,8 +7,7 @@
 #include <regex>
 #include <algorithm>
 
-class LineParser
-{
+class LineParser {
 public:
     LineParser() : comand_("") { }
 
@@ -47,11 +46,12 @@ public:
     }
 
 private:
-    void parseLine(std::string line);
-
     std::string comand_;
     std::vector<std::pair<std::string, std::string>> params_;
     std::vector<std::string> args_;
+
+    void parseLine(std::string line);
+    std::string trimLine(const std::string &str);
 };
 
 #endif // LINEPARSER_H

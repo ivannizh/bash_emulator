@@ -98,14 +98,14 @@ void UserControl::showGroups(bool showUsers) const{
         show(groups_, users_, showUsers);
 }
 
-bool getAns(const std::string &ques){
+bool UserControl::getAns(const std::string &ques){
     std::cout << ques << "[y/n]: ";
     char ans;
     std::cin >> ans;
     return (ans == 'y') ? true : false;
 }
 
-void deleteId(std::vector<Info> &vec1, std::vector<Info> &vec2,
+void UserControl::deleteId(std::vector<Info> &vec1, std::vector<Info> &vec2,
               const std::__cxx11::string &name, const std::string &type){
     if (name == "root"){
         std::cout << "Sorry u can't delete " << type << " 'root'" << std::endl;

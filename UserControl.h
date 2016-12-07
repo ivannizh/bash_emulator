@@ -5,8 +5,7 @@
 #include <vector>
 #include <iomanip>
 
-class BaseUser
-{
+class BaseUser {
 public:
     BaseUser() {}
 
@@ -80,11 +79,14 @@ public:
     int getGroupIdByName(const std::__cxx11::string &name) const;
 
 private:
+    std::vector<Info> users_;
+    std::vector<Info> groups_;
+
+    void deleteId(std::vector<Info>&vec1, std::vector<Info>&vec2, const std::__cxx11::string&name, const std::string&type);
     void show(const std::vector<Info> &vec1, const std::vector<Info> &vec2, bool showGroups) const;
     std::string getNameById(int id, const std::vector<Info> &vec) const;
     int getIdByName(const std::__cxx11::string &name, const std::vector<Info> &vec) const;
-    std::vector<Info> users_;
-    std::vector<Info> groups_;
+    bool getAns(const std::string &ques);
 };
 
 

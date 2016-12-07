@@ -30,7 +30,10 @@ public:
                 }
                 std::cout << "Welcome " << name << std::endl;
                 curUserId_ = id;
+                std::cin.ignore();
             } else {
+                std::cout << "\033[1;32m" << uControl_.getUserNameById(curUserId_) << ":" << "\033[0m"
+                          << "\033[0;36m" << *curDir_ << "\033[0m" << "$";
                 line = "";
                 std::getline(is, line);
                 if (line.length() == 0)
@@ -58,63 +61,23 @@ private:
     void mkFile ( ) { Root::newDescriptor(descrType::FILE);   }
     void mkdir  ( ) { Root::newDescriptor(descrType::CATALOG); }
 
-    void newDescriptor(descrType t);
+    void newDescriptor (descrType t);
+    void ls            ( );
+    void addUser       ( );
+    void deleteUser    ( );
+    void deleteGroup   ( );
+    void showUsers     ( );
+    void showGroups    ( );
+    void cd            ( );
 
-    void ls ( );
-
-    void addUser ( ) {
-        std::string group = lParser.getParam("g");
-        std::vector<std::string> names  = lParser.getArgs();
-
-
-        for(const std::string name: names)
-            uControl_.addUser(name, group);
-    }
-    
     void chmod ( ) { }
     
-    void deleteUser ( ) {
-        std::vector<std::string> names = lParser.getArgs();
-
-        for(const std::string &name: names)
-            uControl_.deleteUser(name);
-    }
-    void deleteGroup ( ) {
-        std::vector<std::string> names = lParser.getArgs();
-
-        for(const std::string &name: names)
-            uControl_.deleteGroup(name);
-    }
+    void mv              ( ) {}
     void cp         ( ) {}
     void rm         ( ) {}
-    void exit       ( ) {
-        std::exit(0);
-    }
-    void logOut () {
-        std::cout << "Good bye" << std::endl;
-        curUserId_ = 0;
-    }
+    void exit       ( ) { std::exit(0); }
+    void logOut ();
 
-    void showUsers  ( ) {
-        bool showGroups = lParser.getParam("g") == "\n";
-
-        uControl_.showUsers(showGroups);
-    }
-    void showGroups  ( ) {
-        bool showUsers = lParser.getParam("u") == "\n";
-
-        uControl_.showGroups(showUsers);
-    }
-    void cd         ( ) {
-        Catalog* cat = curDir_->getCatalog(lParser.getArgs()[0]);
-        if(cat == curDir_ || cat == nullptr)
-            std::cout << "No such file was found" << std::endl;
-        else
-            curDir_ = cat;
-
-
-    }
-    void mv         ( ) {}
     void changeUser      ( ) {}
     void changeUSerTable ( ) {}
     void showStatistic   ( ) const {}

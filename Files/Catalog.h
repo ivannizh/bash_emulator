@@ -22,9 +22,36 @@ public:
         fTable_.addDescr(new Catalog(userId, this, uControl_), name);
     }
 
+    std::string getDirName(const Catalog* cat){
+        if (cat == this)
+            return "/";
+
+        Catalog* parent = dynamic_cast<Catalog*>(fTable_.getFile(".."));
+        const std::string catName = fTable_.getName(cat);
+
+
+        if(parent == this)
+            return "/" + catName;
+        else
+            return parent->getDirName(this) + "/" + catName;
+
+//        std::string res = "";
+
+//        return res + fTable_.getName(cat);
+    }
+
     void showCatalog () const {
         fTable_.showTable();
     }
+
+    friend std::ostream& operator<< (std::ostream& os, const Catalog& cat){
+        Catalog* parent = dynamic_cast<Catalog*>(cat.fTable_.getFile(".."));
+
+        os << (parent->getDirName(&cat));
+        return os;
+    }
+
+//    friend
 
 //    Catalog& operator= (const Catalog& c){
 //        fTable_ = c.fTable_;
@@ -56,8 +83,6 @@ public:
 //    void showInfo ( ) const {}
 private:
     FilesTable fTable_;
-
-
 };
 
 #endif //_CATALOG_H

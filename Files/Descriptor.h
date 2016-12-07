@@ -31,7 +31,7 @@ protected:
     Date created_;
     Date changed_;
     Permission permissoin_;
-    std::string pointer_; // ?
+//    std::string pointer_; // ?
 };
 
 #endif //_DESCRIPTOR_H

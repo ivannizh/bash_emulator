@@ -1,6 +1,6 @@
 #include "LineParser.h"
 
-std::string trimLine(const std::string &str){
+std::string LineParser::trimLine(const std::string &str){
     std::string tmp = str;
     while (tmp[0] == ' ')
         tmp.erase(0, 1);
@@ -39,18 +39,18 @@ void LineParser::parseLine(std::string line) {
     }
 
 
-    std::clog <<"\n\n\n\nNew command:\n\n";
-    std::clog << "command :\n     " << comand_ << std::endl;
+//    std::clog <<"\n\n\n\nNew command:\n\n";
+//    std::clog << "command :\n     " << comand_ << std::endl;
 
-    std::clog << "params :\n";
-    for(auto param: params_)
-        std::clog << "     <" << param.first << "> <" << param.second << ">" << std::endl;
+//    std::clog << "params :\n";
+//    for(auto param: params_)
+//        std::clog << "     <" << param.first << "> <" << param.second << ">" << std::endl;
 
-    std::clog << "args :\n";
-    for(auto arg: args_)
-        std::clog << "     " << arg << std::endl;
+//    std::clog << "args :\n";
+//    for(auto arg: args_)
+//        std::clog << "     " << arg << std::endl;
 
-    std::clog << "line : " << line << std::endl;
+//    std::clog << "line : " << line << std::endl;
 
 }
 
