@@ -18,7 +18,7 @@ public:
         ids_.push_back(newId);
     }
 
-    bool isInGroup(int checkId) const {
+    bool isIn(int checkId) const {
         for(const auto &id: ids_)
             if(id == checkId)
                 return true;
@@ -67,6 +67,7 @@ public:
     UserControl();
 
     void addUser(const std::string &name, const std::string &groupName);
+    bool isUserInGroup (int user, int group) const;
 
     void showUsers(bool showGroups) const;
     void showGroups(bool showUsers) const;

@@ -9,15 +9,19 @@
 
 class Descriptor {
 public:
-    Descriptor ( int userId, bool isDrive, const UserControl& uCtrl) : userId_(userId), uControl_(uCtrl),
-        groupId_(uControl_.getGroupIdByName(uControl_.getUserNameById(userId))),
-        permissoin_(isDrive) {}
+    explicit Descriptor (const UserControl &uCtrl):
+        permissoin_(uCtrl) {
+
+    }
+
+    Descriptor ( int userId, bool isDrive, const UserControl& uCtrl) :
+        permissoin_(userId, isDrive, uCtrl) {}
 
 //    virtual Descriptor* makeCopy() = 0;
 
     void changePerm ( const std::string fileName, int perm ) { permissoin_.changePerm(perm); }
     void showInfo ( ) const {
-        std::cout << permissoin_ << "  " << uControl_.getUserNameById(userId_) << "  " << uControl_.getGroupNameById(groupId_) << "  ";
+        std::cout << permissoin_ << "  " << permissoin_.userName() << "  " << permissoin_.groupName() << "  ";
     }
     void open ( int mod ) {}
     void deleteFile ( ) {}
@@ -25,9 +29,9 @@ public:
     virtual ~Descriptor ( ) {}
 
 protected: 
-    const UserControl& uControl_;
-    int userId_;
-    int groupId_;
+//    const UserControl& uControl_;
+//    int userId_;
+//    int groupId_;
     Date created_;
     Date changed_;
     Permission permissoin_;

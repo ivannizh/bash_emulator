@@ -12,66 +12,30 @@
 
 class Catalog: public Descriptor {
 public: 
-    Catalog ( int userId, const UserControl& uCtrl ) : fTable_(this, this), Descriptor(userId, true, uCtrl) { }
+    Catalog ( int userId, const UserControl& uCtrl ) : fTable_(this, this), Descriptor(uCtrl) { }
     Catalog ( int userId, Catalog* parent, const UserControl& uCtrl ) : fTable_(this, parent), Descriptor(userId, true, uCtrl) {}
 
-    void creatFile ( const std::string &name, int userId ) {
-        fTable_.addDescr(new File(userId, uControl_), name);
-    }
-    void creatCatalog ( const std::string &name, int userId ) {
-        fTable_.addDescr(new Catalog(userId, this, uControl_), name);
-    }
+    void creatFile ( const std::string &name, int userId );
+    void creatCatalog ( const std::string &name, int userId );
 
-    std::string getDirName(const Catalog* cat){
-        if (cat == this)
-            return "/";
-
-        Catalog* parent = dynamic_cast<Catalog*>(fTable_.getFile(".."));
-        const std::string catName = fTable_.getName(cat);
-
-
-        if(parent == this)
-            return "/" + catName;
-        else
-            return parent->getDirName(this) + "/" + catName;
-
-//        std::string res = "";
-
-//        return res + fTable_.getName(cat);
-    }
+    std::string getDirName(const Catalog* cat);
 
     void showCatalog () const {
         fTable_.showTable();
     }
 
-    friend std::ostream& operator<< (std::ostream& os, const Catalog& cat){
-        Catalog* parent = dynamic_cast<Catalog*>(cat.fTable_.getFile(".."));
-
-        os << (parent->getDirName(&cat));
-        return os;
+    bool checkX(int user) const {
+        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkX(user);
     }
 
-//    friend
+    friend std::ostream& operator<< (std::ostream& os, const Catalog& cat);
 
-//    Catalog& operator= (const Catalog& c){
-//        fTable_ = c.fTable_;
-//    }
-//    Catalog& operator= (Catalog&& c){
-//        if(&c != this)
-//            fTable_ = c.fTable_;
-//    }
-
-    Catalog* getCatalog(const std::string &name) throw (std::bad_cast){
-
-        try {
-            Catalog* cat = dynamic_cast<Catalog*>(fTable_.getFile(name));
-            return cat;
-        }
-        catch (const std::bad_cast& r) {
-            int a = 5;
-            return dynamic_cast<Catalog*>(fTable_.getCurDir());
-        }
+    Catalog* getCatalog(const std::string &name) {
+        try                          { return dynamic_cast<Catalog*>(fTable_.getFile(name)); }
+        catch (const std::bad_cast&) { return dynamic_cast<Catalog*>(fTable_.getCurDir());   }
     }
+
+
 
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
 //    void reName       ( const std::string &fileName, const std::string &newName ) {}
@@ -83,6 +47,10 @@ public:
 //    void showInfo ( ) const {}
 private:
     FilesTable fTable_;
+
+    bool checkParentWritePerm(int user){
+        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkWrite(user);
+    }
 };
 
 #endif //_CATALOG_H

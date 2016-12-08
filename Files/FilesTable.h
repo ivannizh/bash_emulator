@@ -14,7 +14,7 @@ class FilesTable {
 public: 
     typedef std::pair<std::string, Descriptor*> fileDescr;
 
-    FilesTable ( Descriptor* desc, Descriptor* parent ) { // const ??
+    FilesTable ( Descriptor* desc, Descriptor* parent ) {
         files_.push_back(fileDescr("." , desc));
         files_.push_back(fileDescr("..", parent));
     }
@@ -59,6 +59,9 @@ public:
             if(file.first == name)
                 return file.second;
         return files_[0].second;
+    }
+    Descriptor* getParent ( ) const {
+        return files_[1].second;
     }
 
     std::string getName(const Descriptor* descr){

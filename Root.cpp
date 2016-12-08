@@ -12,6 +12,7 @@ Root::Root() : uControl_(), rootDir_(1, uControl_), curDir_(&rootDir_), curUserI
     comands_["delg"]      = &Root::deleteGroup;
     comands_["shu"]       = &Root::showUsers;
     comands_["shg"]       = &Root::showGroups;
+    comands_["pwd"]       = &Root::pwd;
     comands_["cp"]        = &Root::cp;
     comands_["rm"]        = &Root::rm;
     comands_["cd"]        = &Root::cd;
@@ -72,6 +73,8 @@ void Root::logOut() {
     curUserId_ = 0;
 }
 
+void Root::exit() {std::exit(0); }
+
 void Root::showUsers() {
     bool showGroups = lParser.getParam("g") == "\n";
 
@@ -88,8 +91,14 @@ void Root::cd() {
     Catalog* cat = curDir_->getCatalog(lParser.getArgs()[0]);
     if(cat == curDir_ || cat == nullptr)
         std::cout << "No such directory was found" << std::endl;
-    else
-        curDir_ = cat;
+    else {
+        if(cat->checkX(curUserId_))
+            curDir_ = cat;
+        else
+            std::cout << "\033[31m" << "Permission denied" << "\033[0m" << std::endl;
+    }
 
 
 }
+
+void Root::pwd(){ std::cout << *curDir_ << std::endl; }
