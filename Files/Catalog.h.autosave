@@ -54,8 +54,6 @@ public:
         catch (const std::bad_cast&) { return dynamic_cast<Catalog*>(fTable_.getCurDir());   }
     }
 
-
-
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
 //    void reName       ( const std::string &fileName, const std::string &newName ) {}
 //    void deleteFile   ( const std::string &fileName )   {}

@@ -5,7 +5,7 @@
 #include <iostream>
 
 #include "../UserControl.h"
-//
+
 // d rwx
 // 1 421
 
@@ -31,9 +31,9 @@ public: //TODO
         }
     }
 
-    bool checkWrite (int user) { return checkPerm(4, user); }
-    bool checkRead  (int user) { return checkPerm(3, user); }
-    bool checkX     (int user) { return checkPerm(3, user); }
+    bool checkRead  (int user) { return checkPerm(4, user); }
+    bool checkWrite (int user) { return checkPerm(2, user); }
+    bool checkX     (int user) { return checkPerm(1, user); }
     
     void changePerm ( int perm ) {
        if(perm < 100 || perm > 777){

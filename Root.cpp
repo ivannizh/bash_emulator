@@ -42,7 +42,16 @@ void Root::newDescriptor(Root::descrType t){
 }
 
 void Root::ls() {
-    curDir_->showCatalog();
+    std::string line = "";
+    if (lParser.getArgsSize() > 0)
+        line = lParser.getArgs()[0];
+
+    try {
+        curDir_->showCatalog(line);
+    } catch (std::invalid_argument) {
+        std::cout << "No such file or directory: " << line << std::endl;
+    }
+
 }
 
 void Root::addUser() {
