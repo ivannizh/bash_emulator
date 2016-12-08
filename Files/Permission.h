@@ -10,7 +10,7 @@
 // 1 421
 
 class Permission {
-public: //TODO
+public:
     explicit Permission ( const UserControl& uCtrl) : d_(1), uControl_(uCtrl), userId_(1),
         groupId_(uControl_.getGroupIdByName(uControl_.getUserNameById(1))){
         p_.push_back(7);
@@ -31,9 +31,22 @@ public: //TODO
         }
     }
 
-    bool checkRead  (int user) { return checkPerm(4, user); }
-    bool checkWrite (int user) { return checkPerm(2, user); }
-    bool checkX     (int user) { return checkPerm(1, user); }
+    bool checkR (int user) { return checkPerm(4, user); }
+    bool checkW (int user) { return checkPerm(2, user); }
+    bool checkX (int user) { return checkPerm(1, user); }
+
+    Permission& operator+= (const std::string& perm) {
+        forOperators(perm, [](char& p, const char& t) -> void { p = p |  t; });
+        return *this;
+    }
+    Permission& operator-= (const std::string& perm) {
+        forOperators(perm, [](char& p, const char& t) -> void { p = p & ~t; });
+        return *this;
+    }
+    Permission& operator= (const std::string& perm) {
+        forOperators(perm, [](char& p, const char& t) -> void { p =      t; });
+        return *this;
+    }
     
     void changePerm ( int perm ) {
        if(perm < 100 || perm > 777){
@@ -74,14 +87,30 @@ public: //TODO
     const UserControl &uControl() const;
 
 private:
-    const UserControl& uControl_;
     bool d_;
+    const UserControl& uControl_;
     int userId_;
     int groupId_;
     std::vector<char> p_;
 
+    void forOperators(const std::string& q, void (*func)(char&, const char&)){
+        char type = 0;
+        for(size_t i = 1; i < q.size(); ++i){
+            switch (q[i]) {
+            case 'r': type += 4; break;
+            case 'w': type += 2; break;
+            case 'x': type += 1; break;
+            }
+        }
+        switch (q[0]) {
+        case 'u': func(p_[0], type); break;
+        case 'g': func(p_[1], type); break;
+        case 'o': func(p_[2], type); break;
+        }
+    }
+
     bool checkPerm(int type, int user){
-        //TODO
+
         if (user == userId_)
             return p_[0] & type;
         if (uControl_.isUserInGroup(user, groupId_))

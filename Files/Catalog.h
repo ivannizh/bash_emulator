@@ -20,7 +20,7 @@ public:
 
     std::string getDirName(const Catalog* cat);
 
-    void showCatalog (std::string dir) const throw(std::invalid_argument){ //TODO : think about const ref
+    void showCatalog (std::string dir, int user) const throw(std::invalid_argument){ //TODO : think about const ref
         if(dir == ""){
             fTable_.showTable();
             return;
@@ -36,24 +36,50 @@ public:
         if(cat == this)
            throw std::invalid_argument("");
 
-        try {
-            cat->showCatalog(dir);
-        } catch (const std::invalid_argument&) {
-            throw;
+        if (cat->checkR(user)){ // BUG
+            try {
+                cat->showCatalog(dir, user);
+            } catch (const std::invalid_argument&) {
+                throw;
+            }
+        } else {
+            std::cout  << "\033[31m" << "Permission denied : " << "\033[0m"  << nextDir << std::endl;
         }
     }
 
     bool checkX(int user) const {
         return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkX(user);
     }
+    bool checkW(int user) const {
+        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkW(user);
+    }
+    bool checkR(int user) const {
+        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkR(user);
+    }
 
     friend std::ostream& operator<< (std::ostream& os, const Catalog& cat);
 
     Catalog* getCatalog(const std::string &name) {
-        try                          { return dynamic_cast<Catalog*>(fTable_.getFile(name)); }
+        try                          { return dynamic_cast<Catalog*>(getDescr(name)); }
         catch (const std::bad_cast&) { return dynamic_cast<Catalog*>(fTable_.getCurDir());   }
     }
 
+    File* getFile(const std::string &name) {
+        try                          { return dynamic_cast<File*>(getDescr(name)); }
+        catch (const std::bad_cast&) { return dynamic_cast<File*>(fTable_.getCurDir());   }
+    }
+
+    Descriptor* getDescr(const std::string &name) {
+        return fTable_.getFile(name);
+    }
+
+    int getOwner(const std::string& fName) {
+        return fTable_.getOwner(fName);
+    }
+
+    int getGroup(const std::string& fName) {
+        return fTable_.getGroup(fName);
+    }
 
 
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
@@ -68,7 +94,7 @@ private:
     FilesTable fTable_;
 
     bool checkParentWritePerm(int user){
-        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkWrite(user);
+        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkW(user);
     }
 };
 

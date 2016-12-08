@@ -12,7 +12,7 @@ std::string LineParser::trimLine(const std::string &str){
 void LineParser::parseLine(std::string line) {
 
     const std::regex reCommand("^[^ ]+");
-    const std::regex reParams(" (--|-)[\\w\\.\\/]+ [\\w\\.\\/]+| (--|-)[\\w\\.\\/-]+");
+    const std::regex reParams(" (--|-)[\\w\\.\\/+-]+ [\\w\\.\\/]+| (--|-)[\\w\\.\\/+-]+");
     const std::regex reArgs(" [\\w\\.\\/:*-]+");
 
     std::smatch match;
@@ -25,7 +25,7 @@ void LineParser::parseLine(std::string line) {
     while (std::regex_search(line, match, reParams)) {
         std::string tmp = trimLine(match[0]);
         std::smatch mLoc;
-        if (std::regex_search(tmp, mLoc, std::regex("^[-\\w]+ [\\w\\/\\.]+"))){
+        if (std::regex_search(tmp, mLoc, std::regex("^[-\\w+-]+ [\\w\\/\\.]+"))){
             int index = tmp.find(' ');
             params_.push_back(std::pair<std::string, std::string>(tmp.substr(1, index-1), tmp.substr(index+1, tmp.length()-1)));
         } else {
@@ -54,8 +54,13 @@ void LineParser::parseLine(std::string line) {
 
 }
 
-const std::vector<std::string> LineParser::getArgs() const {
+const std::vector<std::string>& LineParser::getArgs() const {
     return args_;
+}
+
+const std::vector<std::pair<std::string, std::string>>& LineParser::getParams() const
+{
+    return params_;
 }
 
 const std::string LineParser::getComand() const {

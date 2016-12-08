@@ -71,6 +71,18 @@ public:
         return "";
     }
 
+    int getOwner(const std::string& fName){
+        for(const auto& file: files_)
+            if (file.first == fName)
+                return file.second->getOwner();
+    }
+
+    int getGroup(const std::string& fName){
+        for(const auto& file: files_)
+            if (file.first == fName)
+                return file.second->getGroup();
+    }
+
     void reName ( const std::string &oldName, const std::string &newName );
 
     ~FilesTable ( ) {}

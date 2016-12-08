@@ -26,6 +26,17 @@ public:
     void open ( int mod ) {}
     void deleteFile ( ) {}
 
+    int getOwner() const {
+        return permissoin_.userId();
+    }
+
+    int getGroup() const {
+        return permissoin_.groupId();
+    }
+
+    Permission& perm(){
+        return permissoin_;
+    }
     virtual ~Descriptor ( ) {}
 
 protected: 

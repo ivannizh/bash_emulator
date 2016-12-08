@@ -85,7 +85,32 @@ private:
     void cd            ( );
 
 
-    void chmod ( ) { } //TODO
+    void chmod ( ) {
+        if(lParser.getArgsSize() == 0){
+            std::cout << "Missing file" << std::endl;
+        }
+
+        std::string fName = lParser.getArgs()[0];
+
+        Descriptor* descr = curDir_->getFile(fName);
+
+        if (descr->getOwner() == curUserId_ || uControl_.isUserInGroup(curUserId_, descr->getGroup()) ||
+                uControl_.isUserInGroup(curUserId_, 2)){
+
+            const LineParser::Param params = lParser.getParams();
+
+            for(const auto& param: params){
+
+                if(param.first == "u" || param.first == "g" || param.first == "o") {
+                    descr->perm() = param.first + param.second;
+                } else if(param.first == "u+" || param.first == "g+" || param.first == "o+") {
+                    descr->perm() += param.first[0] + param.second;
+                } else if(param.first == "u-" || param.first == "g-" || param.first == "o-") {
+                    descr->perm() -= param.first[0] + param.second;
+                }
+            }
+        }
+    }
     
     void mv              ( ) {} //TODO
     void cp         ( ) {} //TODO

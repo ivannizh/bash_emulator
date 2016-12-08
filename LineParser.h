@@ -11,6 +11,8 @@ class LineParser {
 public:
     LineParser() : comand_("") { }
 
+    typedef std::vector<std::pair<std::string, std::string>> Param;
+
     void parse(const std::string &str){
         comand_ = "";
         params_.resize(0);
@@ -19,7 +21,8 @@ public:
     }
 
     const std::string getComand() const;
-    const std::vector<std::string> getArgs() const;
+    const std::vector<std::__cxx11::string> &getArgs() const;
+
     int getParamsSize() const {
         return params_.size();
     }
@@ -45,9 +48,11 @@ public:
         return "";
     }
 
+    const Param& getParams() const;
+
 private:
     std::string comand_;
-    std::vector<std::pair<std::string, std::string>> params_;
+    Param params_;
     std::vector<std::string> args_;
 
     void parseLine(std::string line);

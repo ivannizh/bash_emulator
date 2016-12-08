@@ -47,7 +47,7 @@ void Root::ls() {
         line = lParser.getArgs()[0];
 
     try {
-        curDir_->showCatalog(line);
+        curDir_->showCatalog(line, curUserId_);
     } catch (std::invalid_argument) {
         std::cout << "No such file or directory: " << line << std::endl;
     }
@@ -97,17 +97,39 @@ void Root::showGroups() {
 }
 
 void Root::cd() {
-    Catalog* cat = curDir_->getCatalog(lParser.getArgs()[0]);
-    if(cat == curDir_ || cat == nullptr)
-        std::cout << "No such directory was found" << std::endl;
-    else {
-        if(cat->checkX(curUserId_))
-            curDir_ = cat;
+    if (lParser.getArgsSize() == 0)
+        return;
+    std::string dir = lParser.getArgs()[0];
+    std::string tmpDir = "";
+    int npos = 0;
+
+    while (dir[dir.length()-1] == '/')
+        dir.erase(dir.length()-1, 1);
+
+    do {
+        npos = dir.find("/");
+        tmpDir = dir.substr(0, npos);
+
+        if (npos < 0)
+            dir.clear();
         else
-            std::cout << "\033[31m" << "Permission denied" << "\033[0m" << std::endl;
-    }
+            dir.erase(0, npos + 1);
 
+        Catalog* cat = curDir_->getCatalog(tmpDir);
 
+        if(cat == curDir_ || cat == nullptr){
+            std::cout << "No such directory was found: " << tmpDir << std::endl;
+            return;
+        }
+        else {
+            if(cat->checkX(curUserId_))
+                curDir_ = cat;
+            else {
+                std::cout << "\033[31m" << "Permission denied" << "\033[0m" << std::endl;
+                return;
+            }
+        }
+    } while (dir != "");
 }
 
 void Root::pwd(){ std::cout << *curDir_ << std::endl; }
