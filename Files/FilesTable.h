@@ -44,25 +44,21 @@ public:
         return;
     }
 
-    void deleteTable(int user) throw (Permission::PermissionDenied) {
+    void deleteTable(int user) throw (Errors::PermissionDenied) {
         for(size_t i = files_.size() - 1; i > 0; --i){
             if(files_[i].first == "." || files_[i].first == ".."){
-//                delete files_[i].second;
-//                files_.erase(files_.begin() + i);
                 continue;
             }
             try {
                 files_[i].second->deleteItSelf(user);
-//                delete files_[i].second;
-//                files_.erase(files_.begin() + i);
-            } catch (const Permission::PermissionDenied&) {
+            } catch (const Errors::PermissionDenied&) {
                 throw;
             }
         }
     }
 
     void showTable ( ) const {
-        for(const auto line: files_){
+        for(const fileDescr line: files_){
             line.second->showInfo();
             std::cout << line.first;
             std::cout << std::endl;
@@ -110,6 +106,8 @@ public:
     void reName ( const std::string &oldName, const std::string &newName );
 
     ~FilesTable ( ) {
+        files_[0].second = nullptr;
+        files_[1].second = nullptr;
         for(fileDescr& file: files_){
             if(file.second != nullptr)
                 delete file.second;

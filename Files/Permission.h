@@ -9,6 +9,23 @@
 // d rwx
 // 1 421
 
+class Errors {
+public:
+    static void noFile(const std::string& file = "") {
+        std::cout << "No such file or directory : " << file << std::endl;
+    }
+    static void missedFiles() {
+        std::cout << "Missed files" << std::endl;
+    }
+    class PermissionDenied {
+    public:
+        PermissionDenied() {}
+        static void printError() {
+            std::cout << "\033[31m" << "Permission denied" << "\033[0m" << std::endl;
+        }
+    };
+};
+
 class Permission {
 public:
     explicit Permission ( const UserControl& uCtrl) : d_(1), uControl_(uCtrl), userId_(1),
@@ -36,6 +53,9 @@ public:
     bool checkR (int user) { return checkPerm(4, user); }
     bool checkW (int user) { return checkPerm(2, user); }
     bool checkX (int user) { return checkPerm(1, user); }
+
+    void newUser (int user) { userId_ = user; }
+    void newGroup (int group) {groupId_ = group; }
 
     Permission& operator+= (const std::string& perm) {
         forOperators(perm, [](char& p, const char& t) -> void { p = p |  t; });
@@ -88,11 +108,6 @@ public:
     }
 
     const UserControl &uControl() const;
-
-    class PermissionDenied {
-    public:
-        PermissionDenied() {}
-    };
 
 private:
     bool d_;

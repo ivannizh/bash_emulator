@@ -24,9 +24,62 @@ std::__cxx11::string Catalog::getDirName(const Catalog *cat){
     else               return parent->getDirName(this) + "/" + catName;
 }
 
-std::ostream& operator<<(std::ostream &os, const Catalog &cat){
-    Catalog* parent = dynamic_cast<Catalog*>(cat.fTable_.getFile(".."));
+void Catalog::showCatalog(std::__cxx11::string dir, int user) const throw(std::invalid_argument){
+    if(dir == ""){
+        fTable_.showTable();
+        return;
+    }
+    int npos = dir.find("/");
+    std::string nextDir = dir.substr(0, npos);
+    if(npos < 0)
+        dir.clear();
+    else
+        dir.erase(0, npos+1);
 
-    os << (parent->getDirName(&cat));
+    Catalog* cat = dynamic_cast<Catalog*>(fTable_.getFile(nextDir));
+    if(cat == this)
+        throw std::invalid_argument("");
+
+    if (cat->checkR(user)){
+        try {
+            cat->showCatalog(dir, user);
+        } catch (const std::invalid_argument&) {
+            throw;
+        }
+    } else {
+        Errors::PermissionDenied::printError();
+    }
+}
+
+void Catalog::deleteFile(const std::__cxx11::string &file, bool isRec, const int user) throw (Errors::PermissionDenied){
+
+    if(fTable_.getFile(file) == this) {
+        Errors::noFile(file);
+        return;
+    }
+
+    Descriptor* descr = fTable_.getFile(file);
+    if(perm().checkW(user) || descr->perm().userId() == user
+            || permissoin_.uControl().isUserInGroup(user,descr->perm().groupId())) {
+        if (descr->perm().isDir()){
+            if(!isRec){
+                std::cout << "cannot remove '" << file << "': Is a directory" << std::endl;
+                return;
+            }
+            try {
+                dynamic_cast<Catalog*>(descr)->fTable_.deleteTable(user);
+                fTable_.deleteFile(file);
+            } catch(const Errors::PermissionDenied&) {
+                throw;
+            }
+        } else {
+            fTable_.deleteFile(file);
+        }
+    } else
+        throw Errors::PermissionDenied();
+}
+
+std::ostream& operator<<(std::ostream &os, const Catalog &cat){
+    os << (dynamic_cast<Catalog*>(cat.fTable_.getParent())->getDirName(&cat));
     return os;
 }

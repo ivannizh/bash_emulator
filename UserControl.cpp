@@ -177,3 +177,31 @@ std::string Info::name() const {
 int Info::id() const {
     return id_;
 }
+
+void BaseUser::addId(int newId) {
+    for (const auto &id: ids_)
+        if (id == newId) {
+            std::cout << "User is also in group" << std::endl;
+            return;
+        }
+    ids_.push_back(newId);
+}
+
+bool BaseUser::isIn(int checkId) const {
+    for(const auto &id: ids_)
+        if(id == checkId)
+            return true;
+    return false;
+}
+
+void BaseUser::deleteId(int id) {
+    for(auto i = ids_.begin(); i != ids_.end(); i++)
+        if(*i == id){
+            ids_.erase(i);
+            return;
+        }
+}
+
+const std::vector<int> &BaseUser::getIds() const {
+    return ids_;
+}

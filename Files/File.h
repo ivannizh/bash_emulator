@@ -15,7 +15,7 @@ public:
     void makeUnWriteable ( ) {}
     void closeFile       ( ) {}
 
-    void deleteItSelf(int) throw (Permission::PermissionDenied){}
+    void deleteItSelf(int) throw (Errors::PermissionDenied){}
 
 //    void showInfo   ( ) const {}
 //    virtual void open       ( int mod ) {}

@@ -9,23 +9,15 @@
 
 class Descriptor {
 public:
-    explicit Descriptor (const UserControl &uCtrl):
-        permissoin_(uCtrl) {
+    explicit Descriptor (const UserControl &uCtrl) : permissoin_(uCtrl) { }
 
-    }
-
-    Descriptor ( int userId, bool isDrive, const UserControl& uCtrl) :
-        permissoin_(userId, isDrive, uCtrl) {}
-
-//    virtual Descriptor* makeCopy() = 0;
-
-//    void changePerm(const std::string fileName, int perm ) { permissoin_.changePerm(perm); }
+    Descriptor ( int userId, bool isDrive, const UserControl& uCtrl) : permissoin_(userId, isDrive, uCtrl) { }
     void showInfo() const {
         std::cout << permissoin_ << "  ";
     }
     void open(int mod ){}
 
-    virtual void deleteItSelf(int user) throw (Permission::PermissionDenied) = 0;
+    virtual void deleteItSelf(int user) throw (Errors::PermissionDenied) = 0;
 
     int getOwner() const {
         return permissoin_.userId();
@@ -38,7 +30,6 @@ public:
     Permission& perm(){
         return permissoin_;
     }
-//    virtual ~Descriptor ( ){}
 
 protected: 
 //    const UserControl& uControl_;

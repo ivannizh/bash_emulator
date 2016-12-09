@@ -1,7 +1,8 @@
 #include "Root.h"
 
-Root::Root() : uControl_(), rootDir_(1, uControl_), curDir_(&rootDir_), curUserId_(0){
+Root::Root() : uControl_(), rootDir_(uControl_), curDir_(&rootDir_), curUserId_(0){
 
+    comands_["chowner"]   = &Root::chowner;
     comands_["logout"]    = &Root::logOut;
     comands_["touch"]     = &Root::mkFile;
     comands_["mkdir"]     = &Root::mkdir;
@@ -23,33 +24,67 @@ Root::Root() : uControl_(), rootDir_(1, uControl_), curDir_(&rootDir_), curUserI
     comands_[">"]         = &Root::mkFile;
 }
 
-void Root::newDescriptor(Root::descrType t){
-    if (lParser.getParamsSize() > 0)
-        std::cout << "Ignoring parametres" << std::endl;
+void Root::mkFile() {
+    for(std::string file: lParser.getArgs()){
+        while(file[file.length()-1] == '/')
+            file.erase(file.length()-1, 1);
 
-    for(const auto name: lParser.getArgs())
-        switch (t) {
-        case descrType::CATALOG:
-            curDir_->creatCatalog(name, curUserId_);
-            break;
-        case descrType::FILE:
-            curDir_->creatFile(name, curUserId_);
-            break;
-        default:
-//            std::cerr << "ERROR in func Root::newDescriptor" << std::endl;
-            break;
+        Catalog* tmp = curDir_;
+        int npos = file.find_last_of('/');
+        std::string fName = file.substr(npos + 1, file.length());
+        if(npos < 0)
+            file = "";
+        else {
+            file.erase(npos, file.length());
+            cd(file);
         }
+        Root::newDescriptor(descrType::FILE, fName);
+        curDir_ = tmp;
+    }
+}
+
+void Root::mkdir() {
+    for(std::string file: lParser.getArgs()){
+        while(file[file.length()-1] == '/')
+            file.erase(file.length()-1, 1);
+
+        Catalog* tmp = curDir_;
+        int npos = file.find_last_of('/');
+        std::string fName = file.substr(npos + 1, file.length());
+        if(npos < 0)
+            file = "";
+        else {
+            file.erase(npos, file.length());
+            cd(file);
+        }
+        Root::newDescriptor(descrType::CATALOG, fName);
+        curDir_ = tmp;
+    }
+
+}
+
+void Root::newDescriptor(Root::descrType t, const std::string& fName){
+    switch (t) {
+    case descrType::CATALOG:
+        curDir_->creatCatalog(fName, curUserId_);
+        break;
+    case descrType::FILE:
+        curDir_->creatFile(fName, curUserId_);
+        break;
+    default:
+        //            std::cerr << "ERROR in func Root::newDescriptor" << std::endl;
+        break;
+    }
 }
 
 void Root::ls() {
     std::string line = "";
     if (lParser.getArgsSize() > 0)
         line = lParser.getArgs()[0];
-
     try {
         curDir_->showCatalog(line, curUserId_);
     } catch (std::invalid_argument) {
-        std::cout << "No such file or directory: " << line << std::endl;
+        Errors::noFile(line);
     }
 
 }
@@ -97,13 +132,14 @@ void Root::showGroups() {
 }
 
 void Root::cd(){
+    if(lParser.getArgsSize() == 0) {
+        Errors::missedFiles();
+        return;
+    }
     Root::cd(lParser.getArgs()[0]);
 }
 
 void Root::cd(std::string dir) {
-    if (lParser.getArgsSize() == 0)
-        return;
-
     std::string tmpDir = "";
     int npos = 0;
 
@@ -122,23 +158,76 @@ void Root::cd(std::string dir) {
         Catalog* cat = curDir_->getCatalog(tmpDir);
 
         if(cat == curDir_ || cat == nullptr){
-            std::cout << "No such directory was found: " << tmpDir << std::endl;
+            Errors::noFile(tmpDir);
             return;
         }
         else {
             if(cat->checkX(curUserId_))
                 curDir_ = cat;
             else {
-                std::cout << "\033[31m" << "Permission denied" << "\033[0m" << std::endl;
+                Errors::PermissionDenied::printError();
                 return;
             }
         }
     } while (dir != "");
 }
 
+void Root::rm() {
+    if(lParser.getArgsSize() == 0) {
+        Errors::missedFiles();
+        return;
+    }
+    for(std::string file: lParser.getArgs()){
+        while(file[file.length()-1] == '/')
+            file.erase(file.length()-1, 1);
+
+        Catalog* tmp = curDir_;
+        int npos = file.find_last_of('/');
+        std::string fName = file.substr(npos + 1, file.length());
+
+        if(npos < 0)
+            file = "";
+        else {
+            file.erase(npos, file.length());
+            cd(file);
+        }
+        try{
+            curDir_->deleteFile(fName, lParser.getParam("r") == "\n", curUserId_);
+        } catch (const Errors::PermissionDenied&) {
+            Errors::PermissionDenied::printError();
+        }
+
+        curDir_ = tmp;
+    }
+}
+
+void Root::chowner() {
+    if(lParser.getArgsSize() == 0) {
+        Errors::missedFiles();
+        return;
+    }
+
+    for(std::string file: lParser.getArgs()){
+        while(file[file.length()-1] == '/')
+            file.erase(file.length()-1, 1);
+
+        Catalog* tmp = curDir_;
+        int npos = file.find_last_of('/');
+        std::string fName = file.substr(npos + 1, file.length());
+        if(npos < 0)
+            file = "";
+        else {
+            file.erase(npos, file.length());
+            cd(file);
+        }
+        curDir_->chowner(fName, lParser.getParam("u"), lParser.getParam("g"), curUserId_);
+        curDir_ = tmp;
+    }
+}
+
 void Root::chmod() {
     if(lParser.getArgsSize() == 0){
-        std::cout << "Missing file" << std::endl;
+        Errors::missedFiles();
     }
 
     std::string fName = lParser.getArgs()[0];

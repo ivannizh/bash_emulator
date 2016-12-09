@@ -12,7 +12,7 @@
 
 class Catalog: public Descriptor {
 public: 
-    Catalog ( int userId, const UserControl& uCtrl ) : fTable_(this, this), Descriptor(uCtrl) { }
+    Catalog ( const UserControl& uCtrl ) : fTable_(this, this), Descriptor(uCtrl) { }
     Catalog ( int userId, Catalog* parent, const UserControl& uCtrl ) : fTable_(this, parent), Descriptor(userId, true, uCtrl) {}
 
     void creatFile ( const std::string &name, int userId );
@@ -20,59 +20,9 @@ public:
 
     std::string getDirName(const Catalog* cat);
 
-    void showCatalog (std::string dir, int user) const throw(std::invalid_argument){
-        if(dir == ""){
-            fTable_.showTable();
-            return;
-        }
-        int npos = dir.find("/");
-        std::string nextDir = dir.substr(0, npos);
-        if(npos < 0)
-            dir.clear();
-        else
-            dir.erase(0, npos+1);
+    void showCatalog (std::string dir, int user) const throw(std::invalid_argument);
 
-        Catalog* cat = dynamic_cast<Catalog*>(fTable_.getFile(nextDir));
-        if(cat == this)
-           throw std::invalid_argument("");
-
-        if (cat->checkR(user)){
-            try {
-                cat->showCatalog(dir, user);
-            } catch (const std::invalid_argument&) {
-                throw;
-            }
-        } else {
-            std::cout  << "\033[31m" << "Permission denied : " << "\033[0m"  << nextDir << std::endl;
-        }
-    }
-
-    void deleteFile (const std::string& file, bool isRec, const int user) throw (Permission::PermissionDenied){
-
-        if(fTable_.getFile(file) == this) {
-            std::cout << "No such file or directory : " << file << std::endl;
-            return;
-        }
-
-        if(perm().checkW(user)) {
-            Descriptor* descr = fTable_.getFile(file);
-            if (descr->perm().isDir()){
-                if(!isRec){
-                    std::cout << "cannot remove '" << file << "': Is a directory" << std::endl;
-                    return;
-                }
-                try {
-                    dynamic_cast<Catalog*>(descr)->fTable_.deleteTable(user);
-                    fTable_.deleteFile(file);
-                } catch(const Permission::PermissionDenied&) {
-                    throw;
-                }
-            } else {
-                fTable_.deleteFile(file);
-            }
-        } else
-            throw Permission::PermissionDenied();
-    }
+    void deleteFile (const std::string& file, bool isRec, const int user) throw (Errors::PermissionDenied);
 
     bool checkX(int user) const {
         return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkX(user);
@@ -108,10 +58,39 @@ public:
         return fTable_.getGroup(fName);
     }
 
-    void deleteItSelf(int user) throw (Permission::PermissionDenied){
+    void deleteItSelf(int user) throw (Errors::PermissionDenied){
         if (!perm().checkX(user) || !perm().checkW(user))
-            throw Permission::PermissionDenied();
+            throw Errors::PermissionDenied();
         fTable_.deleteTable(user);
+    }
+
+    void chowner(const std::string& fName, const std::string& newUser, const std::string& newGroup, int user) throw (Errors::PermissionDenied){
+        int userId  = permissoin_.uControl().getUserIdByName  ( newUser  );
+        int groupId = permissoin_.uControl().getGroupIdByName ( newGroup );
+
+        if(userId == 0 && groupId == 0) {
+            std::cout << "Wrong user or group name" << std::endl;
+            return;
+        }
+
+        Descriptor* file = fTable_.getFile(fName);
+
+        if (file == this){
+            Errors::noFile(fName);
+        }
+
+        if(permissoin_.uControl().isUserInGroup(user, 2) ||
+                permissoin_.uControl().isUserInGroup(user, file->perm().groupId()) ||
+                file->getOwner() == user){
+            if (userId  != 0)
+                file->perm().newUser  ( userId  );
+            if (groupId != 0)
+                file->perm().newGroup ( groupId );
+
+        } else {
+            Errors::PermissionDenied::printError();
+            return;
+        }
     }
 
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
@@ -129,6 +108,7 @@ private:
     bool checkParentWritePerm(int user){
         return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkW(user);
     }
+
 };
 
 #endif //_CATALOG_H

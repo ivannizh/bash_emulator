@@ -9,33 +9,13 @@ class BaseUser {
 public:
     BaseUser() {}
 
-    void addId(int newId) {
-        for (const auto &id: ids_)
-            if (id == newId) {
-                std::cout << "User is also in group" << std::endl;
-                return;
-            }
-        ids_.push_back(newId);
-    }
+    void addId(int newId);
 
-    bool isIn(int checkId) const {
-        for(const auto &id: ids_)
-            if(id == checkId)
-                return true;
-        return false;
-    }
+    bool isIn(int checkId) const;
 
-    void deleteId ( int id ) {
-        for(auto i = ids_.begin(); i != ids_.end(); i++)
-            if(*i == id){
-                ids_.erase(i);
-                return;
-            }
-    }
+    void deleteId ( int id );
 
-    const std::vector<int>& getIds() const {
-        return ids_;
-    }
+    const std::vector<int>& getIds() const;
 protected:
     std::vector<int> ids_;
 };

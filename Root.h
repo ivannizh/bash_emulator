@@ -4,13 +4,9 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-//#include <typeinfo>
-
 #include "UserControl.h"
 #include "Files/Catalog.h"
 #include "LineParser.h"
-
-//TODO : попробовать использовать . для получения имени
 
 class Root {
 public:
@@ -25,7 +21,6 @@ public:
                 std::cout << "Login: ";
                 std::string name;
                 std::cin >> name;
-                std::cout << "'" << name << "'";
                 int id = uControl_.getUserIdByName(name);
                 if(std::cin.eof()){
                     std::cout << "\nGoodbye" << std::endl;
@@ -70,54 +65,25 @@ private:
 
     LineParser lParser;
 
-    void mkFile ( ) { Root::newDescriptor(descrType::FILE);   }
-    void mkdir  ( ) { Root::newDescriptor(descrType::CATALOG); }
+    void cd     (std::string dir);
 
-    void newDescriptor (descrType t);
+    void newDescriptor (descrType t, const std::__cxx11::string &fName);
     void deleteGroup   ( );
     void showGroups    ( );
     void deleteUser    ( );
     void showUsers     ( );
+    void chowner       ( );
     void addUser       ( );
     void logOut        ( );
+    void mkFile        ( );
+    void mkdir         ( );
     void chmod         ( );
     void exit          ( );
     void pwd           ( );
     void ls            ( );
     void cd            ( );
+    void rm            ( );
 
-
-    void cd (std::string dir);
-    void rm         ( ) {
-//        std::string file= lParser.getArgs()[0];
-        for(std::string file: lParser.getArgs()){
-            while(file[file.length()-1] == '/')
-                file.erase(file.length()-1, 1);
-
-            Catalog* tmp = curDir_;
-            int npos = file.find_last_of('/');
-            std::string fName = file.substr(npos + 1, file.length());
-
-            if(npos < 0)
-                file = "";
-            else {
-                file.erase(npos, file.length());
-                cd(file);
-            }
-            try{
-                curDir_->deleteFile(fName, lParser.getParam("r") == "\n", curUserId_);
-            } catch (const Permission::PermissionDenied&) {
-                std::cout  << "\033[31m" << "Permission denied : " << "\033[0m" << std::endl;
-            }
-
-            curDir_ = tmp;
-        }
-    }
-    
-
-    void chowner() {} //TODO
-    void chgroup() {} //TODO
-    void chother() {} // TODO
 
     void mv              ( ) {} //TODO
     void cp         ( ) {} //TODO
