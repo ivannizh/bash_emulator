@@ -4,7 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <stdexcept>
-#include <typeinfo>
+//#include <typeinfo>
 
 #include "UserControl.h"
 #include "Files/Catalog.h"
@@ -25,6 +25,7 @@ public:
                 std::cout << "Login: ";
                 std::string name;
                 std::cin >> name;
+                std::cout << "'" << name << "'";
                 int id = uControl_.getUserIdByName(name);
                 if(std::cin.eof()){
                     std::cout << "\nGoodbye" << std::endl;
@@ -79,42 +80,47 @@ private:
     void showUsers     ( );
     void addUser       ( );
     void logOut        ( );
+    void chmod         ( );
     void exit          ( );
     void pwd           ( );
     void ls            ( );
     void cd            ( );
 
 
-    void chmod ( ) {
-        if(lParser.getArgsSize() == 0){
-            std::cout << "Missing file" << std::endl;
-        }
+    void cd (std::string dir);
+    void rm         ( ) {
+//        std::string file= lParser.getArgs()[0];
+        for(std::string file: lParser.getArgs()){
+            while(file[file.length()-1] == '/')
+                file.erase(file.length()-1, 1);
 
-        std::string fName = lParser.getArgs()[0];
+            Catalog* tmp = curDir_;
+            int npos = file.find_last_of('/');
+            std::string fName = file.substr(npos + 1, file.length());
 
-        Descriptor* descr = curDir_->getFile(fName);
-
-        if (descr->getOwner() == curUserId_ || uControl_.isUserInGroup(curUserId_, descr->getGroup()) ||
-                uControl_.isUserInGroup(curUserId_, 2)){
-
-            const LineParser::Param params = lParser.getParams();
-
-            for(const auto& param: params){
-
-                if(param.first == "u" || param.first == "g" || param.first == "o") {
-                    descr->perm() = param.first + param.second;
-                } else if(param.first == "u+" || param.first == "g+" || param.first == "o+") {
-                    descr->perm() += param.first[0] + param.second;
-                } else if(param.first == "u-" || param.first == "g-" || param.first == "o-") {
-                    descr->perm() -= param.first[0] + param.second;
-                }
+            if(npos < 0)
+                file = "";
+            else {
+                file.erase(npos, file.length());
+                cd(file);
             }
+            try{
+                curDir_->deleteFile(fName, lParser.getParam("r") == "\n", curUserId_);
+            } catch (const Permission::PermissionDenied&) {
+                std::cout  << "\033[31m" << "Permission denied : " << "\033[0m" << std::endl;
+            }
+
+            curDir_ = tmp;
         }
     }
     
+
+    void chowner() {} //TODO
+    void chgroup() {} //TODO
+    void chother() {} // TODO
+
     void mv              ( ) {} //TODO
     void cp         ( ) {} //TODO
-    void rm         ( ) {} //TODO
 
 //    void changeUser      ( ) {}
 //    void changeUSerTable ( ) {}

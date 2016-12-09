@@ -19,12 +19,13 @@ public:
 
 //    virtual Descriptor* makeCopy() = 0;
 
-    void changePerm ( const std::string fileName, int perm ) { permissoin_.changePerm(perm); }
-    void showInfo ( ) const {
-        std::cout << permissoin_ << "  " << permissoin_.userName() << "  " << permissoin_.groupName() << "  ";
+//    void changePerm(const std::string fileName, int perm ) { permissoin_.changePerm(perm); }
+    void showInfo() const {
+        std::cout << permissoin_ << "  ";
     }
-    void open ( int mod ) {}
-    void deleteFile ( ) {}
+    void open(int mod ){}
+
+    virtual void deleteItSelf(int user) throw (Permission::PermissionDenied) = 0;
 
     int getOwner() const {
         return permissoin_.userId();
@@ -37,7 +38,7 @@ public:
     Permission& perm(){
         return permissoin_;
     }
-    virtual ~Descriptor ( ) {}
+//    virtual ~Descriptor ( ){}
 
 protected: 
 //    const UserControl& uControl_;

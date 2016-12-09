@@ -15,13 +15,15 @@ public:
     void makeUnWriteable ( ) {}
     void closeFile       ( ) {}
 
-    void showInfo   ( ) const {}
-    virtual void open       ( int mod ) {}
+    void deleteItSelf(int) throw (Permission::PermissionDenied){}
 
+//    void showInfo   ( ) const {}
+//    virtual void open       ( int mod ) {}
+//    virtual ~File(){}
 private: 
-    unsigned int size_;
-    bool isReadable_;
-    bool isWriteable_;
+//    unsigned int size_;
+//    bool isReadable_;
+//    bool isWriteable_;
     // храниние пользователя
 };
 

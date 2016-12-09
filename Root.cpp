@@ -96,10 +96,14 @@ void Root::showGroups() {
     uControl_.showGroups(showUsers);
 }
 
-void Root::cd() {
+void Root::cd(){
+    Root::cd(lParser.getArgs()[0]);
+}
+
+void Root::cd(std::string dir) {
     if (lParser.getArgsSize() == 0)
         return;
-    std::string dir = lParser.getArgs()[0];
+
     std::string tmpDir = "";
     int npos = 0;
 
@@ -130,6 +134,33 @@ void Root::cd() {
             }
         }
     } while (dir != "");
+}
+
+void Root::chmod() {
+    if(lParser.getArgsSize() == 0){
+        std::cout << "Missing file" << std::endl;
+    }
+
+    std::string fName = lParser.getArgs()[0];
+
+    Descriptor* descr = curDir_->getFile(fName);
+
+    if (descr->getOwner() == curUserId_ || uControl_.isUserInGroup(curUserId_, descr->getGroup()) ||
+            uControl_.isUserInGroup(curUserId_, 2)){
+
+        const LineParser::Param params = lParser.getParams();
+
+        for(const auto& param: params){
+
+            if(param.first == "u" || param.first == "g" || param.first == "o") {
+                descr->perm() = param.first + param.second;
+            } else if(param.first == "u+" || param.first == "g+" || param.first == "o+") {
+                descr->perm() += param.first[0] + param.second;
+            } else if(param.first == "u-" || param.first == "g-" || param.first == "o-") {
+                descr->perm() -= param.first[0] + param.second;
+            }
+        }
+    }
 }
 
 void Root::pwd(){ std::cout << *curDir_ << std::endl; }

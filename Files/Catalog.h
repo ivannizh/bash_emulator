@@ -20,7 +20,7 @@ public:
 
     std::string getDirName(const Catalog* cat);
 
-    void showCatalog (std::string dir, int user) const throw(std::invalid_argument){ //TODO : think about const ref
+    void showCatalog (std::string dir, int user) const throw(std::invalid_argument){
         if(dir == ""){
             fTable_.showTable();
             return;
@@ -36,7 +36,7 @@ public:
         if(cat == this)
            throw std::invalid_argument("");
 
-        if (cat->checkR(user)){ // BUG
+        if (cat->checkR(user)){
             try {
                 cat->showCatalog(dir, user);
             } catch (const std::invalid_argument&) {
@@ -45,6 +45,33 @@ public:
         } else {
             std::cout  << "\033[31m" << "Permission denied : " << "\033[0m"  << nextDir << std::endl;
         }
+    }
+
+    void deleteFile (const std::string& file, bool isRec, const int user) throw (Permission::PermissionDenied){
+
+        if(fTable_.getFile(file) == this) {
+            std::cout << "No such file or directory : " << file << std::endl;
+            return;
+        }
+
+        if(perm().checkW(user)) {
+            Descriptor* descr = fTable_.getFile(file);
+            if (descr->perm().isDir()){
+                if(!isRec){
+                    std::cout << "cannot remove '" << file << "': Is a directory" << std::endl;
+                    return;
+                }
+                try {
+                    dynamic_cast<Catalog*>(descr)->fTable_.deleteTable(user);
+                    fTable_.deleteFile(file);
+                } catch(const Permission::PermissionDenied&) {
+                    throw;
+                }
+            } else {
+                fTable_.deleteFile(file);
+            }
+        } else
+            throw Permission::PermissionDenied();
     }
 
     bool checkX(int user) const {
@@ -81,6 +108,11 @@ public:
         return fTable_.getGroup(fName);
     }
 
+    void deleteItSelf(int user) throw (Permission::PermissionDenied){
+        if (!perm().checkX(user) || !perm().checkW(user))
+            throw Permission::PermissionDenied();
+        fTable_.deleteTable(user);
+    }
 
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
 //    void reName       ( const std::string &fileName, const std::string &newName ) {}
@@ -90,6 +122,7 @@ public:
 
 //    void open       ( const std::string &name, int mod ) {}
 //    void showInfo ( ) const {}
+//    virtual ~Catalog(){}
 private:
     FilesTable fTable_;
 

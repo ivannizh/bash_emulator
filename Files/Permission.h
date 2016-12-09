@@ -31,6 +31,8 @@ public:
         }
     }
 
+    bool isDir() const { return d_; }
+
     bool checkR (int user) { return checkPerm(4, user); }
     bool checkW (int user) { return checkPerm(2, user); }
     bool checkX (int user) { return checkPerm(1, user); }
@@ -67,6 +69,7 @@ public:
             it & 2 ? os<<'w' : os<<'-';
             it & 1 ? os<<'x' : os<<'-';
         }
+        os << "  " << perm.userName() << "  " << perm.groupName();
         return os;
     }
 
@@ -85,6 +88,11 @@ public:
     }
 
     const UserControl &uControl() const;
+
+    class PermissionDenied {
+    public:
+        PermissionDenied() {}
+    };
 
 private:
     bool d_;
@@ -118,6 +126,8 @@ private:
 
         return p_[2] & type;
     }
+
+
 };
 
 #endif //_PERMISSION_H

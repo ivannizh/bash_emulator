@@ -44,6 +44,23 @@ public:
         return;
     }
 
+    void deleteTable(int user) throw (Permission::PermissionDenied) {
+        for(size_t i = files_.size() - 1; i > 0; --i){
+            if(files_[i].first == "." || files_[i].first == ".."){
+//                delete files_[i].second;
+//                files_.erase(files_.begin() + i);
+                continue;
+            }
+            try {
+                files_[i].second->deleteItSelf(user);
+//                delete files_[i].second;
+//                files_.erase(files_.begin() + i);
+            } catch (const Permission::PermissionDenied&) {
+                throw;
+            }
+        }
+    }
+
     void showTable ( ) const {
         for(const auto line: files_){
             line.second->showInfo();
@@ -52,7 +69,14 @@ public:
         }
     }
 
-    void deleteFile ( const std::string &name ) {}
+    void deleteFile ( const std::string &name ) {
+        for(size_t i = 0; i < files_.size(); ++i)
+            if(files_[i].first == name){
+                delete files_[i].second;
+                files_.erase(files_.begin() + i);
+                return;
+            }
+    }
 
     Descriptor* getFile ( const std::string &name ) const {
         for(const auto &file: files_)
@@ -85,7 +109,12 @@ public:
 
     void reName ( const std::string &oldName, const std::string &newName );
 
-    ~FilesTable ( ) {}
+    ~FilesTable ( ) {
+        for(fileDescr& file: files_){
+            if(file.second != nullptr)
+                delete file.second;
+        }
+    }
 
 
 private:
