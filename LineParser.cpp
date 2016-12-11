@@ -58,8 +58,39 @@ const std::vector<std::string>& LineParser::getArgs() const {
     return args_;
 }
 
+int LineParser::getParamsSize() const {
+    return params_.size();
+}
+
+int LineParser::getArgsSize(){
+    return args_.size();
+}
+
+std::__cxx11::string LineParser::getParam(const std::__cxx11::string &p){
+
+    for (auto i = params_.begin(); i != params_.end(); i++)
+        if (i->first == p){
+            std::string tmp = i->second;
+            params_.erase(i);
+            i--;
+
+            if (tmp == "")
+                tmp = "\n";
+
+            return tmp;
+        }
+    return "";
+}
+
 const std::vector<std::pair<std::string, std::string>>& LineParser::getParams() const {
     return params_;
+}
+
+void LineParser::parse(const std::__cxx11::string &str){
+    comand_ = "";
+    params_.resize(0);
+    args_.resize(0);
+    parseLine(str);
 }
 
 const std::string LineParser::getComand() const {

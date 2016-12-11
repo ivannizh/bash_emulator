@@ -79,6 +79,117 @@ void Catalog::deleteFile(const std::__cxx11::string &file, bool isRec, const int
         throw Errors::PermissionDenied();
 }
 
+bool Catalog::checkX(int user) const {
+    return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkX(user);
+}
+
+bool Catalog::checkW(int user) const {
+    return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkW(user);
+}
+
+bool Catalog::checkR(int user) const {
+    return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkR(user);
+}
+
+void Catalog::delRef(const std::__cxx11::string &fName){
+    fTable_.delRef(fName);
+}
+
+void Catalog::addRef(const std::__cxx11::string &fName, Descriptor *descr){
+    fTable_.addRef(fName, descr);
+}
+
+Catalog* Catalog::getCatalog(const std::__cxx11::string &name) {
+    try                          { return dynamic_cast<Catalog*>(getDescr(name)); }
+    catch (const std::bad_cast&) { return dynamic_cast<Catalog*>(fTable_.getCurDir());   }
+}
+
+File* Catalog::getFile(const std::__cxx11::string &name) {
+    try                          { return dynamic_cast<File*>(getDescr(name));      }
+    catch (const std::bad_cast&) { return nullptr; }
+}
+
+Descriptor *Catalog::getDescr(const std::__cxx11::string &name) {
+    return fTable_.getFile(name);
+}
+
+int Catalog::getOwner(const std::__cxx11::string &fName) {
+    return fTable_.getOwner(fName);
+}
+
+int Catalog::getGroup(const std::__cxx11::string &fName) {
+    return fTable_.getGroup(fName);
+}
+
+void Catalog::deleteItSelf(int user)  throw (Errors::PermissionDenied){
+    if (!perm().checkX(user) || !perm().checkW(user))
+        throw Errors::PermissionDenied();
+    fTable_.deleteTable(user);
+}
+
+void Catalog::chowner(const std::__cxx11::string &fName,
+                      const std::__cxx11::string &newUser,
+                      const std::__cxx11::string &newGroup, int user)
+                      throw (Errors::PermissionDenied) {
+    int userId  = permissoin_.uControl().getUserIdByName  ( newUser  );
+    int groupId = permissoin_.uControl().getGroupIdByName ( newGroup );
+
+    if(userId == 0 && groupId == 0) {
+        std::cout << "Wrong user or group name" << std::endl;
+        return;
+    }
+
+    Descriptor* file = fTable_.getFile(fName);
+
+    if (file == this){
+        Errors::noFile(fName);
+    }
+
+    if(permissoin_.uControl().isUserInGroup(user, 2) ||
+            permissoin_.uControl().isUserInGroup(user, file->perm().groupId()) ||
+            file->getOwner() == user){
+        if (userId  != 0)
+            file->perm().newUser  ( userId  );
+        if (groupId != 0)
+            file->perm().newGroup ( groupId );
+
+    } else {
+        Errors::PermissionDenied::printError();
+        return;
+    }
+}
+
+Descriptor *Catalog::retCopy(const std::__cxx11::string &fName, Catalog *parent){
+    Descriptor* file = fTable_.getFile(fName);
+    Descriptor* ret;
+
+    if(file->perm().isDir()){
+        ret = dynamic_cast<Catalog*>(file)->getCopy(parent);
+    }else {
+        ret = dynamic_cast<File*>(file)->getCopy();
+    }
+
+    return ret;
+}
+
+Catalog *Catalog::getCopy(Catalog *parent){
+    Catalog* cat = new Catalog(permissoin_, parent);
+
+    for(const FilesTable::fileDescr& file: fTable_.getFiles()){
+
+        if(file.first == "." || file.first == "..")
+            continue;
+
+        if(file.second->perm().isDir()){
+            cat->addRef(file.first, dynamic_cast<Catalog*>(file.second)->getCopy(cat));
+        } else {
+            cat->addRef(file.first, dynamic_cast<File*>(file.second)->getCopy());
+        }
+
+    }
+    return cat;
+}
+
 bool Catalog::checkParentWritePerm(int user){
     return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkW(user);
 }

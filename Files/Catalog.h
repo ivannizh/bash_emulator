@@ -13,96 +13,44 @@
 class Catalog: public Descriptor {
 public: 
     Catalog ( const UserControl& uCtrl ) : Descriptor(uCtrl), fTable_(this, this) { }
+    Catalog ( const Permission& perm, Catalog* parent) : Descriptor(perm), fTable_(this, parent) {}
     Catalog ( int userId, Catalog* parent, const UserControl& uCtrl ) : Descriptor(userId, true, uCtrl), fTable_(this, parent) {}
+
+    std::string getDirName(const Catalog* cat);
 
     void creatFile ( const std::string &name, int userId );
     void creatCatalog ( const std::string &name, int userId );
 
-    std::string getDirName(const Catalog* cat);
-
     void showCatalog (std::string dir, int user) const throw(std::invalid_argument);
-
     void deleteFile (const std::string& file, bool isRec, const int user) throw (Errors::PermissionDenied);
 
-    bool checkX(int user) const {
-        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkX(user);
-    }
-    bool checkW(int user) const {
-        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkW(user);
-    }
-    bool checkR(int user) const {
-        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkR(user);
-    }
+    bool checkX(int user) const;
+    bool checkW(int user) const;
+    bool checkR(int user) const;
+
+    void delRef(const std::string& fName);
+    void addRef(const std::string& fName, Descriptor* descr);
 
     friend std::ostream& operator<< (std::ostream& os, const Catalog& cat);
 
-    Catalog* getCatalog(const std::string &name) {
-        try                          { return dynamic_cast<Catalog*>(getDescr(name)); }
-        catch (const std::bad_cast&) { return dynamic_cast<Catalog*>(fTable_.getCurDir());   }
-    }
+    Catalog* getCatalog(const std::string &name);
 
-    File* getFile(const std::string &name) {
-        try                          { return dynamic_cast<File*>(getDescr(name)); }
-        catch (const std::bad_cast&) { return dynamic_cast<File*>(fTable_.getCurDir());   }
-    }
+    File* getFile(const std::string &name);
 
-    Descriptor* getDescr(const std::string &name) {
-        return fTable_.getFile(name);
-    }
+    Descriptor* getDescr(const std::string &name);
 
-    int getOwner(const std::string& fName) {
-        return fTable_.getOwner(fName);
-    }
+    int getOwner(const std::string& fName);
+    int getGroup(const std::string& fName);
 
-    int getGroup(const std::string& fName) {
-        return fTable_.getGroup(fName);
-    }
+    void deleteItSelf(int user) throw (Errors::PermissionDenied);
 
-    void deleteItSelf(int user) throw (Errors::PermissionDenied){
-        if (!perm().checkX(user) || !perm().checkW(user))
-            throw Errors::PermissionDenied();
-        fTable_.deleteTable(user);
-    }
+    void chowner(const std::string& fName, const std::string& newUser, const std::string& newGroup, int user) throw (Errors::PermissionDenied);
 
-    void chowner(const std::string& fName, const std::string& newUser, const std::string& newGroup, int user) throw (Errors::PermissionDenied){
-        int userId  = permissoin_.uControl().getUserIdByName  ( newUser  );
-        int groupId = permissoin_.uControl().getGroupIdByName ( newGroup );
+    Descriptor* retCopy(const std::string& fName, Catalog* parent);
 
-        if(userId == 0 && groupId == 0) {
-            std::cout << "Wrong user or group name" << std::endl;
-            return;
-        }
+    Catalog* getCopy(Catalog* parent);
 
-        Descriptor* file = fTable_.getFile(fName);
-
-        if (file == this){
-            Errors::noFile(fName);
-        }
-
-        if(permissoin_.uControl().isUserInGroup(user, 2) ||
-                permissoin_.uControl().isUserInGroup(user, file->perm().groupId()) ||
-                file->getOwner() == user){
-            if (userId  != 0)
-                file->perm().newUser  ( userId  );
-            if (groupId != 0)
-                file->perm().newGroup ( groupId );
-
-        } else {
-            Errors::PermissionDenied::printError();
-            return;
-        }
-    }
-    ~Catalog(){}
-
-//    void copy         ( const std::string &fileName, const std::string &dist )    {}
-//    void reName       ( const std::string &fileName, const std::string &newName ) {}
-//    void deleteFile   ( const std::string &fileName )   {}
-//    void goNextDir    ( const std::string &name ) const {}
-//    void reName       ( const std::string &oldName, const std::string &newName  ) {}
-
-//    void open       ( const std::string &name, int mod ) {}
-//    void showInfo ( ) const {}
-//    virtual ~Catalog(){}
+    virtual ~Catalog(){}
 private:
     FilesTable fTable_;
 

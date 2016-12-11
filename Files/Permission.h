@@ -14,6 +14,9 @@ public:
     static void noFile(const std::string& file = "") {
         std::cout << "No such file or directory : " << file << std::endl;
     }
+    static void noCatalog(const std::string& file = "") {
+        std::cout << "No such    directory : " << file << std::endl;
+    }
     static void missedFiles() {
         std::cout << "Missed files" << std::endl;
     }

@@ -7,13 +7,13 @@ class File: public Descriptor {
 public: 
     File(int userId, const UserControl& uCrtl) : Descriptor(userId, false, uCrtl) {}
 
-//    Descriptor* makeCopy() {}
+    File* getCopy() const;
     
-    void makeReadable    ( ) {}
-    void makeUnReadable  ( ) {}
-    void makeWriteable   ( ) {}
-    void makeUnWriteable ( ) {}
-    void closeFile       ( ) {}
+    void makeReadable    ( ) {} // TODO
+    void makeUnReadable  ( ) {} // TODO
+    void makeWriteable   ( ) {} // TODO
+    void makeUnWriteable ( ) {} // TODO
+    void closeFile       ( ) {} // TODO
 
     void deleteItSelf(int) throw (Errors::PermissionDenied){}
 

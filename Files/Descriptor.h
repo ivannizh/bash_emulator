@@ -10,33 +10,20 @@
 class Descriptor {
 public:
     explicit Descriptor (const UserControl &uCtrl) : permissoin_(uCtrl) { }
+    explicit Descriptor (const Permission& perm) : permissoin_(perm) {}
 
     Descriptor ( int userId, bool isDrive, const UserControl& uCtrl) : permissoin_(userId, isDrive, uCtrl) { }
-    void showInfo() const {
-        std::cout << permissoin_ << " " << created_ << " ";
-    }
-//    void open(int mod ){}
+
+    void showInfo() const;
+    int  getOwner() const;
+    int  getGroup() const;
+
+    Permission& perm();
 
     virtual void deleteItSelf(int user) throw (Errors::PermissionDenied) = 0;
-
-    int getOwner() const {
-        return permissoin_.userId();
-    }
-
-    int getGroup() const {
-        return permissoin_.groupId();
-    }
-
-    Permission& perm(){
-        return permissoin_;
-    }
-
     virtual ~Descriptor() {}
 
-protected: 
-//    const UserControl& uControl_;
-//    int userId_;
-//    int groupId_;
+protected:
     Date created_;
     Date changed_;
     Permission permissoin_;

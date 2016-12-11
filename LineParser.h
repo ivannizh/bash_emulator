@@ -13,40 +13,15 @@ public:
 
     typedef std::vector<std::pair<std::string, std::string>> Param;
 
-    void parse(const std::string &str){
-        comand_ = "";
-        params_.resize(0);
-        args_.resize(0);
-        parseLine(str);
-    }
+    void parse(const std::string &str);
 
     const std::string getComand() const;
     const std::vector<std::__cxx11::string> &getArgs() const;
 
-    int getParamsSize() const {
-        return params_.size();
-    }
+    int getParamsSize() const;
+    int getArgsSize();
 
-    int getArgsSize(){
-        return args_.size();
-    }
-
-
-    std::string getParam(const std::string &p){
-
-        for (auto i = params_.begin(); i != params_.end(); i++)
-            if (i->first == p){
-                std::string tmp = i->second;
-                params_.erase(i);
-                i--;
-
-                if (tmp == "")
-                    tmp = "\n";
-
-                return tmp;
-            }
-        return "";
-    }
+    std::string getParam(const std::string &p);
 
     const Param& getParams() const;
 

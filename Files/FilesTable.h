@@ -13,105 +13,42 @@ class FilesTable {
 public: 
     typedef std::pair<std::string, Descriptor*> fileDescr;
 
-    FilesTable ( Descriptor* desc, Descriptor* parent ) {
-        files_.push_back(fileDescr("." , desc));
-        files_.push_back(fileDescr("..", parent));
-    }
+    FilesTable ( Descriptor* desc, Descriptor* parent );
 
-    Descriptor* getCurDir() const {
-        return files_[0].second;
-    }
+    Descriptor* getCurDir() const;
 
-    FilesTable ( const FilesTable & )  { throw std::runtime_error("Write func1 in FilesTable"); }
+    void delRef(const std::string& fName);
+
+    void addRef(const std::string& fName, Descriptor* descr);
+
+    FilesTable ( const FilesTable &  ) { throw std::runtime_error("Write func1 in FilesTable"); }
     FilesTable ( const FilesTable && ) { throw std::runtime_error("Write func2 in FilesTable"); }
 
     FilesTable& operator= ( const FilesTable & ) { throw std::runtime_error("Write func3 in FilesTable"); }
     FilesTable& operator= ( const FilesTable && ) { throw std::runtime_error("Write func4 in FilesTable"); }
 
-    void addDescr ( Descriptor *desc, const std::string &name ) {
-        std::string tmp = name;
-        if(tmp.back() == '/')
-            tmp.erase(name.length()-1, 1);
+    void addDescr ( Descriptor *desc, const std::string &name );
 
-        for (const auto file:files_)
-            if(file.first == tmp){
-                std::cout << "cannot create file/directory ‘" << tmp << "’: File exists" << std::endl;
-                return;
-            }
+    void deleteTable(int user) throw (Errors::PermissionDenied);
 
-        files_.push_back(fileDescr(tmp, desc));
-        return;
-    }
+    void showTable ( ) const;
 
-    void deleteTable(int user) throw (Errors::PermissionDenied) {
-        for(size_t i = files_.size() - 1; i > 0; --i){
-            if(files_[i].first == "." || files_[i].first == ".."){
-                continue;
-            }
-            try {
-                files_[i].second->deleteItSelf(user);
-            } catch (const Errors::PermissionDenied&) {
-                throw;
-            }
-        }
-    }
+    void deleteFile ( const std::string &name );
 
-    void showTable ( ) const {
-        for(const fileDescr line: files_){
-            line.second->showInfo();
-            std::cout << line.first;
-            std::cout << std::endl;
-        }
-    }
+    Descriptor* getFile ( const std::string &name ) const;
+    Descriptor* getParent ( ) const;
 
-    void deleteFile ( const std::string &name ) {
-        for(size_t i = 0; i < files_.size(); ++i)
-            if(files_[i].first == name){
-                delete files_[i].second;
-                files_.erase(files_.begin() + i);
-                return;
-            }
-    }
+    std::string getName(const Descriptor* descr);
 
-    Descriptor* getFile ( const std::string &name ) const {
-        for(const auto &file: files_)
-            if(file.first == name)
-                return file.second;
-        return files_[0].second;
-    }
-    Descriptor* getParent ( ) const {
-        return files_[1].second;
-    }
+    int getOwner(const std::string& fName);
 
-    std::string getName(const Descriptor* descr){
-        for (const auto file: files_)
-            if (file.second == descr)
-                return file.first;
-        return "";
-    }
-
-    int getOwner(const std::string& fName){
-        for(const auto& file: files_)
-            if (file.first == fName)
-                return file.second->getOwner();
-    }
-
-    int getGroup(const std::string& fName){
-        for(const auto& file: files_)
-            if (file.first == fName)
-                return file.second->getGroup();
-    }
+    int getGroup(const std::string& fName);
 
     void reName ( const std::string &oldName, const std::string &newName );
 
-    ~FilesTable ( ) {
-        files_[0].second = nullptr;
-        files_[1].second = nullptr;
-        for(fileDescr& file: files_){
-            if(file.second != nullptr)
-                delete file.second;
-        }
-    }
+    ~FilesTable ( );
+
+    const std::vector<fileDescr>& getFiles() const;
 
 private:
     std::vector<fileDescr> files_;
