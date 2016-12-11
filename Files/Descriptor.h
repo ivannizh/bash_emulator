@@ -13,9 +13,9 @@ public:
 
     Descriptor ( int userId, bool isDrive, const UserControl& uCtrl) : permissoin_(userId, isDrive, uCtrl) { }
     void showInfo() const {
-        std::cout << permissoin_ << "  ";
+        std::cout << permissoin_ << " " << created_ << " ";
     }
-    void open(int mod ){}
+//    void open(int mod ){}
 
     virtual void deleteItSelf(int user) throw (Errors::PermissionDenied) = 0;
 
@@ -30,6 +30,8 @@ public:
     Permission& perm(){
         return permissoin_;
     }
+
+    virtual ~Descriptor() {}
 
 protected: 
 //    const UserControl& uControl_;

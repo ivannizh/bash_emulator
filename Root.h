@@ -56,13 +56,11 @@ public:
 
 private:
     UserControl uControl_;
-    int curUserId_;
     Catalog rootDir_;
     Catalog* curDir_;
-
+    int curUserId_;
     std::map<std::string,funcPtr> comands_;
     enum descrType {FILE, CATALOG};
-
     LineParser lParser;
 
     void cd     (std::string dir);
@@ -85,12 +83,8 @@ private:
     void rm            ( );
 
 
-    void mv              ( ) {} //TODO
-    void cp         ( ) {} //TODO
-
-//    void changeUser      ( ) {}
-//    void changeUSerTable ( ) {}
-//    void showStatistic   ( ) const {}
+    void mv            ( ) {} //TODO
+    void cp            ( ) {} //TODO
 };
 
 #endif //_ROOT_H

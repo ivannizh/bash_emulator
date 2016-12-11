@@ -17,6 +17,8 @@ public:
 
     void deleteItSelf(int) throw (Errors::PermissionDenied){}
 
+    ~File(){}
+
 //    void showInfo   ( ) const {}
 //    virtual void open       ( int mod ) {}
 //    virtual ~File(){}

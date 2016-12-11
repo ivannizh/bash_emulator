@@ -69,9 +69,7 @@ void UserControl::addUser(const std::__cxx11::string &name, const std::__cxx11::
         std::cout << "Group '" << groupName << "' was created" << std::endl;
         groups_.back() += users_.back().id();
         users_.back() += groups_.back().id();
-
     }
-
     return;
 }
 
@@ -79,6 +77,7 @@ bool UserControl::isUserInGroup(int user, int group) const {
     for (const Info& gr: groups_)
         if(gr.id() == group)
             return gr().isIn(user);
+    return false;
 }
 
 void UserControl::show(const std::vector<Info> &vec1, const std::vector<Info> &vec2, bool showGroups) const{
@@ -178,13 +177,13 @@ int Info::id() const {
     return id_;
 }
 
-void BaseUser::addId(int newId) {
-    for (const auto &id: ids_)
-        if (id == newId) {
+void BaseUser::addId(int id) {
+    for (const auto &Id: ids_)
+        if (id == Id) {
             std::cout << "User is also in group" << std::endl;
             return;
         }
-    ids_.push_back(newId);
+    ids_.push_back(id);
 }
 
 bool BaseUser::isIn(int checkId) const {

@@ -11,7 +11,7 @@ void Catalog::creatCatalog(const std::__cxx11::string &name, int user) {
     if(checkParentWritePerm(user))
         fTable_.addDescr(new Catalog(user, this, permissoin_.uControl()), name);
     else
-        std::cout << "\033[31m" << "Permission denied" << "\033[0m" << std::endl;
+        Errors::PermissionDenied::printError();
 }
 
 std::__cxx11::string Catalog::getDirName(const Catalog *cat){
@@ -77,6 +77,10 @@ void Catalog::deleteFile(const std::__cxx11::string &file, bool isRec, const int
         }
     } else
         throw Errors::PermissionDenied();
+}
+
+bool Catalog::checkParentWritePerm(int user){
+    return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkW(user);
 }
 
 std::ostream& operator<<(std::ostream &os, const Catalog &cat){

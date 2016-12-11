@@ -7,7 +7,6 @@
 #include <iomanip>
 
 #include "Descriptor.h"
-//#include "Catalog.h"
 #include "../UserControl.h"
 
 class FilesTable {
@@ -113,7 +112,6 @@ public:
                 delete file.second;
         }
     }
-
 
 private:
     std::vector<fileDescr> files_;

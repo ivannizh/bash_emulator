@@ -1,11 +1,11 @@
 #include "LineParser.h"
 
-std::string LineParser::trimLine(const std::string &str){
+std::string LineParser::trimLine(const std::string &str) {
     std::string tmp = str;
     while (tmp[0] == ' ')
         tmp.erase(0, 1);
     while (tmp[tmp.length()-1] == ' ')
-        tmp.erase((tmp.length()-1, 1));
+        tmp.erase(tmp.length()-1, 1);
     return tmp;
 }
 
@@ -58,8 +58,7 @@ const std::vector<std::string>& LineParser::getArgs() const {
     return args_;
 }
 
-const std::vector<std::pair<std::string, std::string>>& LineParser::getParams() const
-{
+const std::vector<std::pair<std::string, std::string>>& LineParser::getParams() const {
     return params_;
 }
 

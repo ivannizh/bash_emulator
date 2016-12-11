@@ -12,8 +12,8 @@
 
 class Catalog: public Descriptor {
 public: 
-    Catalog ( const UserControl& uCtrl ) : fTable_(this, this), Descriptor(uCtrl) { }
-    Catalog ( int userId, Catalog* parent, const UserControl& uCtrl ) : fTable_(this, parent), Descriptor(userId, true, uCtrl) {}
+    Catalog ( const UserControl& uCtrl ) : Descriptor(uCtrl), fTable_(this, this) { }
+    Catalog ( int userId, Catalog* parent, const UserControl& uCtrl ) : Descriptor(userId, true, uCtrl), fTable_(this, parent) {}
 
     void creatFile ( const std::string &name, int userId );
     void creatCatalog ( const std::string &name, int userId );
@@ -92,6 +92,7 @@ public:
             return;
         }
     }
+    ~Catalog(){}
 
 //    void copy         ( const std::string &fileName, const std::string &dist )    {}
 //    void reName       ( const std::string &fileName, const std::string &newName ) {}
@@ -105,9 +106,7 @@ public:
 private:
     FilesTable fTable_;
 
-    bool checkParentWritePerm(int user){
-        return dynamic_cast<Catalog*>(fTable_.getCurDir())->permissoin_.checkW(user);
-    }
+    bool checkParentWritePerm(int user);
 
 };
 

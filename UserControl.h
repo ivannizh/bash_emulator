@@ -9,22 +9,19 @@ class BaseUser {
 public:
     BaseUser() {}
 
-    void addId(int newId);
-
-    bool isIn(int checkId) const;
-
+    void addId    ( int id );
     void deleteId ( int id );
 
+    bool isIn(int checkId) const;
     const std::vector<int>& getIds() const;
+
 protected:
     std::vector<int> ids_;
 };
 
 class Info {
 public:
-    Info (const std::string &name) : buser_(BaseUser()), name_(name), id_(idCount++) {
-
-    }
+    Info (const std::string &name) : buser_(BaseUser()), name_(name), id_(idCount++) { }
 
     Info& operator+  ( int id ) { buser_.addId(id);    return *this; }
     Info& operator+= ( int id ) { buser_.addId(id);    return *this; }
@@ -49,15 +46,16 @@ public:
     void addUser(const std::string &name, const std::string &groupName);
     bool isUserInGroup (int user, int group) const;
 
-    void showUsers(bool showGroups) const;
-    void showGroups(bool showUsers) const;
-    void deleteUser(const std::string &name);
-    void deleteGroup(const std::string &name);
+    void showUsers   ( bool showGroups         ) const;
+    void showGroups  ( bool showUsers          ) const;
+    void deleteUser  ( const std::string &name );
+    void deleteGroup ( const std::string &name );
 
-    std::string getGroupNameById(int id) const;
-    std::string getUserNameById(int id) const;
-    int getUserIdByName(const std::string &name) const;
-    int getGroupIdByName(const std::__cxx11::string &name) const;
+    std::string getGroupNameById ( int id ) const;
+    std::string getUserNameById  ( int id ) const;
+
+    int getUserIdByName  ( const std::string &name          ) const;
+    int getGroupIdByName ( const std::__cxx11::string &name ) const;
 
 private:
     std::vector<Info> users_;
