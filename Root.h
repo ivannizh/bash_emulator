@@ -35,19 +35,24 @@ private:
     void showGroups    ( );
     void deleteUser    ( );
     void showUsers     ( );
+    void unBlockW      ( );
+    void unBlockR      ( );
     void chowner       ( );
     void addUser       ( );
     void logOut        ( );
     void mkFile        ( );
+    void blockW        ( );
+    void blockR        ( );
     void mkdir         ( );
     void chmod         ( );
+    void clean         ( );
+    void write         ( );
     void exit          ( );
     void pwd           ( );
+    void cat           ( );
     void ls            ( );
     void cd            ( );
     void rm            ( );
-
-
     void mv            ( );
     void cp            ( );
 };

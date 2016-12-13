@@ -4,18 +4,25 @@ std::ofstream Root::f;
 
 Root::Root() : uControl_(), rootDir_(uControl_), curDir_(&rootDir_), curUserId_(0){
 
+    comands_["unBlockW"]  = &Root::unBlockW;
+    comands_["unBlockR"]  = &Root::unBlockR;
     comands_["chowner"]   = &Root::chowner;
     comands_["logout"]    = &Root::logOut;
+    comands_["blockW"]    = &Root::blockW;
+    comands_["blockR"]    = &Root::blockR;
     comands_["touch"]     = &Root::mkFile;
     comands_["mkdir"]     = &Root::mkdir;
     comands_["chmod"]     = &Root::chmod;
+    comands_["clean"]     = &Root::clean;
+    comands_["write"]     = &Root::write;
     comands_["addu"]      = &Root::addUser;
     comands_["delu"]      = &Root::deleteUser;
-    comands_["exit"]      = &Root::logOut   ;
+    comands_["exit"]      = &Root::logOut;
     comands_["delg"]      = &Root::deleteGroup;
     comands_["shu"]       = &Root::showUsers;
     comands_["shg"]       = &Root::showGroups;
     comands_["pwd"]       = &Root::pwd;
+    comands_["cat"]       = &Root::cat;
     comands_["cp"]        = &Root::cp;
     comands_["rm"]        = &Root::rm;
     comands_["cd"]        = &Root::cd;
@@ -68,7 +75,7 @@ void Root::startWork() {
                 continue;
             lParser.parse(line);
             if(comands_.count(lParser.getComand()))
-                (this->*comands_[lParser.getComand()])();
+                (this->*comands_[lParser.getComand()])  ();
             else
                 std::cout << "No command '" << lParser.getComand() << "' found" << std::endl;
         }
@@ -250,6 +257,283 @@ void Root::rm() {
 
         curDir_ = tmp;
     }
+}
+
+void Root::write() {
+    if(lParser.getArgsSize() < 1){
+        std::cout << "Missing file" << std::endl;
+        return;
+    }
+
+    std::string file = lParser.getArgs()[0];
+
+    while(file[file.length()-1] == '/')
+        file.erase(file.length()-1, 1);
+
+    Catalog* tmp = curDir_;
+    int npos = file.find_last_of('/');
+    std::string fName = file.substr(npos + 1, file.length());
+
+    if(npos < 0)
+        file = "";
+    else {
+        file.erase(npos, file.length());
+        cd(file);
+    }
+
+
+    Descriptor* descr = curDir_->getDescr(fName);
+
+    if(!descr->perm().checkW(curUserId_)){
+        Errors::PermissionDenied::printError();
+        curDir_ = tmp;
+    }
+
+    if(descr->perm().isDir()){
+        std::cout << "Can't write in file '" << fName << "'. It's a directory" << std::endl;
+    } else {
+        File* f = dynamic_cast<File*>(descr);
+        std::string line;
+        std::getline(std::cin, line);
+        f->write(line, curUserId_);
+    }
+
+    curDir_ = tmp;
+}
+
+void Root::cat(){
+
+    if(lParser.getArgsSize() < 1){
+        std::cout << "Missing file" << std::endl;
+        return;
+    }
+
+    std::string file = lParser.getArgs()[0];
+
+    while(file[file.length()-1] == '/')
+        file.erase(file.length()-1, 1);
+
+    Catalog* tmp = curDir_;
+    int npos = file.find_last_of('/');
+    std::string fName = file.substr(npos + 1, file.length());
+
+    if(npos < 0)
+        file = "";
+    else {
+        file.erase(npos, file.length());
+        cd(file);
+    }
+
+
+    Descriptor* descr = curDir_->getDescr(fName);
+
+    if(!descr->perm().checkR(curUserId_)){
+        Errors::PermissionDenied::printError();
+        curDir_ = tmp;
+    }
+
+    if(descr->perm().isDir()){
+        std::cout << "Can't write in file '" << fName << "'. It's a directory" << std::endl;
+    } else {
+        File* f = dynamic_cast<File*>(descr);
+        f->cat(curUserId_);
+    }
+
+    curDir_ = tmp;
+
+}
+
+void Root::clean() {
+    if(lParser.getArgsSize() < 1){
+        std::cout << "Missing file" << std::endl;
+        return;
+    }
+
+    std::string file = lParser.getArgs()[0];
+
+    while(file[file.length()-1] == '/')
+        file.erase(file.length()-1, 1);
+
+    Catalog* tmp = curDir_;
+    int npos = file.find_last_of('/');
+    std::string fName = file.substr(npos + 1, file.length());
+
+    if(npos < 0)
+        file = "";
+    else {
+        file.erase(npos, file.length());
+        cd(file);
+    }
+
+    Descriptor* descr = curDir_->getDescr(fName);
+
+    if(descr->perm().isDir()){
+        std::cout << "Can't write in file '" << fName << "'. It's a directory" << std::endl;
+    } else {
+        File* f = dynamic_cast<File*>(descr);
+        f->clean(curUserId_);
+    }
+    curDir_ = tmp;
+}
+
+void Root::blockW(){
+    if(lParser.getArgsSize() < 1){
+        std::cout << "Missing file" << std::endl;
+        return;
+    }
+
+    std::string file = lParser.getArgs()[0];
+
+    while(file[file.length()-1] == '/')
+        file.erase(file.length()-1, 1);
+
+    Catalog* tmp = curDir_;
+    int npos = file.find_last_of('/');
+    std::string fName = file.substr(npos + 1, file.length());
+
+    if(npos < 0)
+        file = "";
+    else {
+        file.erase(npos, file.length());
+        cd(file);
+    }
+
+
+    Descriptor* descr = curDir_->getDescr(fName);
+
+    if(!descr->perm().checkW(curUserId_)){
+        Errors::PermissionDenied::printError();
+        curDir_ = tmp;
+    }
+
+    if(descr->perm().isDir()){
+        std::cout << "Can't block file '" << fName << "'. It's a directory" << std::endl;
+    } else {
+        File* f = dynamic_cast<File*>(descr);
+        f->makeUnWriteable(curUserId_);
+    }
+
+    curDir_ = tmp;
+}
+
+void Root::blockR() {
+    if(lParser.getArgsSize() < 1){
+        std::cout << "Missing file" << std::endl;
+        return;
+    }
+
+    std::string file = lParser.getArgs()[0];
+
+    while(file[file.length()-1] == '/')
+        file.erase(file.length()-1, 1);
+
+    Catalog* tmp = curDir_;
+    int npos = file.find_last_of('/');
+    std::string fName = file.substr(npos + 1, file.length());
+
+    if(npos < 0)
+        file = "";
+    else {
+        file.erase(npos, file.length());
+        cd(file);
+    }
+
+
+    Descriptor* descr = curDir_->getDescr(fName);
+
+    if(!descr->perm().checkR(curUserId_)){
+        Errors::PermissionDenied::printError();
+        curDir_ = tmp;
+    }
+
+    if(descr->perm().isDir()){
+        std::cout << "Can't block file '" << fName << "'. It's a directory" << std::endl;
+    } else {
+        File* f = dynamic_cast<File*>(descr);
+        f->makeUnReadable(curUserId_);
+    }
+
+    curDir_ = tmp;
+}
+
+void Root::unBlockW(){
+    if(lParser.getArgsSize() < 1){
+        std::cout << "Missing file" << std::endl;
+        return;
+    }
+
+    std::string file = lParser.getArgs()[0];
+
+    while(file[file.length()-1] == '/')
+        file.erase(file.length()-1, 1);
+
+    Catalog* tmp = curDir_;
+    int npos = file.find_last_of('/');
+    std::string fName = file.substr(npos + 1, file.length());
+
+    if(npos < 0)
+        file = "";
+    else {
+        file.erase(npos, file.length());
+        cd(file);
+    }
+
+
+    Descriptor* descr = curDir_->getDescr(fName);
+
+    if(!descr->perm().checkW(curUserId_)){
+        Errors::PermissionDenied::printError();
+        curDir_ = tmp;
+    }
+
+    if(descr->perm().isDir()){
+        std::cout << "Can't unblock file '" << fName << "'. It's a directory" << std::endl;
+    } else {
+        File* f = dynamic_cast<File*>(descr);
+        f->makeWriteable(curUserId_);
+    }
+
+    curDir_ = tmp;
+}
+
+void Root::unBlockR(){
+    if(lParser.getArgsSize() < 1){
+        std::cout << "Missing file" << std::endl;
+        return;
+    }
+
+    std::string file = lParser.getArgs()[0];
+
+    while(file[file.length()-1] == '/')
+        file.erase(file.length()-1, 1);
+
+    Catalog* tmp = curDir_;
+    int npos = file.find_last_of('/');
+    std::string fName = file.substr(npos + 1, file.length());
+
+    if(npos < 0)
+        file = "";
+    else {
+        file.erase(npos, file.length());
+        cd(file);
+    }
+
+
+    Descriptor* descr = curDir_->getDescr(fName);
+
+    if(!descr->perm().checkR(curUserId_)){
+        Errors::PermissionDenied::printError();
+        curDir_ = tmp;
+    }
+
+    if(descr->perm().isDir()){
+        std::cout << "Can't block file '" << fName << "'. It's a directory" << std::endl;
+    } else {
+        File* f = dynamic_cast<File*>(descr);
+        f->makeReadable(curUserId_);
+    }
+
+    curDir_ = tmp;
 }
 
 void Root::mv() {
