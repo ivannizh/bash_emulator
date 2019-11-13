@@ -12,7 +12,8 @@ SOURCES += main.cpp \
     Files/File.cpp \
     Files/FilesTable.cpp \
     Files/Permission.cpp \
-    UserControl.cpp
+    UserControl.cpp \
+    myvector.cpp
 
 HEADERS += \
     Root.h \
@@ -23,4 +24,5 @@ HEADERS += \
     Files/FilesTable.h \
     Files/Permission.h \
     LineParser.h \
-    UserControl.h
+    UserControl.h \
+    myvector.h

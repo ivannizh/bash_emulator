@@ -2,10 +2,10 @@
 #define _ROOT_H
 
 #include <iostream>
-#include <vector>
 #include <stdexcept>
 #include <fstream>
 
+#include "myvector.h"
 #include "UserControl.h"
 #include "Files/Catalog.h"
 #include "LineParser.h"
@@ -28,9 +28,10 @@ private:
     enum descrType {FILE, CATALOG};
     LineParser lParser;
 
-    void cd     (std::string dir);
+    void cd (std::string dir);
 
     void newDescriptor (descrType t, const std::__cxx11::string &fName);
+
     void deleteGroup   ( );
     void showGroups    ( );
     void deleteUser    ( );

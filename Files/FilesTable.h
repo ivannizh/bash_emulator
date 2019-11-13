@@ -2,10 +2,10 @@
 #define _FILESTABLE_H
 
 #include <iostream>
-#include <vector>
 #include <stdexcept>
 #include <iomanip>
 
+#include "myvector.h"
 #include "Descriptor.h"
 #include "../UserControl.h"
 
@@ -48,10 +48,10 @@ public:
 
     ~FilesTable ( );
 
-    const std::vector<fileDescr>& getFiles() const;
+    const MyVector<fileDescr>& getFiles() const;
 
 private:
-    std::vector<fileDescr> files_;
+    MyVector<fileDescr> files_;
 };
 
 #endif //_FILESTABLE_H

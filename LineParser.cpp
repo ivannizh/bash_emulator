@@ -54,7 +54,7 @@ void LineParser::parseLine(std::string line) {
 
 }
 
-const std::vector<std::string>& LineParser::getArgs() const {
+const MyVector<std::string>& LineParser::getArgs() const {
     return args_;
 }
 
@@ -82,14 +82,14 @@ std::__cxx11::string LineParser::getParam(const std::__cxx11::string &p){
     return "";
 }
 
-const std::vector<std::pair<std::string, std::string>>& LineParser::getParams() const {
+const MyVector<std::pair<std::string, std::string>>& LineParser::getParams() const {
     return params_;
 }
 
 void LineParser::parse(const std::__cxx11::string &str){
     comand_ = "";
-    params_.resize(0);
-    args_.resize(0);
+    params_.clear();
+    args_.clear();
     parseLine(str);
 }
 

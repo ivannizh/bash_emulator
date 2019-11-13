@@ -80,7 +80,7 @@ bool UserControl::isUserInGroup(int user, int group) const {
     return false;
 }
 
-void UserControl::show(const std::vector<Info> &vec1, const std::vector<Info> &vec2, bool showGroups) const{
+void UserControl::show(const MyVector<Info> &vec1, const MyVector<Info> &vec2, bool showGroups) const{
     if (showGroups){
         for (const Info &user: vec1) {
             std::cout << std::setw(10) << std::setfill(' ') << user.name()  << ": ";
@@ -110,7 +110,7 @@ bool UserControl::getAns(const std::string &ques){
     return (ans == 'y') ? true : false;
 }
 
-void UserControl::deleteId(std::vector<Info> &vec1, std::vector<Info> &vec2,
+void UserControl::deleteId(MyVector<Info> &vec1, MyVector<Info> &vec2,
               const std::__cxx11::string &name, const std::string &type){
     if (name == "root"){
         std::cout << "Sorry u can't delete " << type << " 'root'" << std::endl;
@@ -139,7 +139,7 @@ void UserControl::deleteGroup(const std::__cxx11::string &name) {
     deleteId(groups_, users_, name, "group");
 }
 
-std::string UserControl::getNameById(int id, const std::vector<Info> &vec) const {
+std::string UserControl::getNameById(int id, const MyVector<Info> &vec) const {
     for(const Info &group: vec)
         if(group.id() == id)
             return group.name();
@@ -154,7 +154,7 @@ std::__cxx11::string UserControl::getUserNameById(int id) const {
     return getNameById(id, users_);
 }
 
-int UserControl::getIdByName(const std::__cxx11::string &name, const std::vector<Info> &vec) const {
+int UserControl::getIdByName(const std::__cxx11::string &name, const MyVector<Info> &vec) const {
     for(const Info &user: vec)
         if(user.name() == name)
             return user.id();
@@ -201,6 +201,6 @@ void BaseUser::deleteId(int id) {
         }
 }
 
-const std::vector<int> &BaseUser::getIds() const {
+const MyVector<int> &BaseUser::getIds() const {
     return ids_;
 }

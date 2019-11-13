@@ -2,21 +2,22 @@
 #define LINEPARSER_H
 
 #include <iostream>
-#include <vector>
 #include <map>
 #include <regex>
 #include <algorithm>
+
+#include "myvector.h"
 
 class LineParser {
 public:
     LineParser() : comand_("") { }
 
-    typedef std::vector<std::pair<std::string, std::string>> Param;
+    typedef MyVector<std::pair<std::string, std::string>> Param;
 
     void parse(const std::string &str);
 
     const std::string getComand() const;
-    const std::vector<std::__cxx11::string> &getArgs() const;
+    const MyVector<std::__cxx11::string> &getArgs() const;
 
     int getParamsSize() const;
     int getArgsSize();
@@ -28,7 +29,7 @@ public:
 private:
     std::string comand_;
     Param params_;
-    std::vector<std::string> args_;
+    MyVector<std::string>   args_;
 
     void parseLine(std::string line);
     std::string trimLine(const std::string &str);

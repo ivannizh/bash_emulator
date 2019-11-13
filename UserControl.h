@@ -2,7 +2,7 @@
 #define USERCONTROL_H
 
 #include <iostream>
-#include <vector>
+#include "myvector.h"
 #include <iomanip>
 
 class BaseUser {
@@ -13,14 +13,15 @@ public:
     void deleteId ( int id );
 
     bool isIn(int checkId) const;
-    const std::vector<int>& getIds() const;
+    const MyVector<int>& getIds() const;
 
 protected:
-    std::vector<int> ids_;
+    MyVector<int> ids_;
 };
 
 class Info {
 public:
+    Info(){}
     Info (const std::string &name) : buser_(BaseUser()), name_(name), id_(idCount++) { }
 
     Info& operator+  ( int id ) { buser_.addId(id);    return *this; }
@@ -58,13 +59,13 @@ public:
     int getGroupIdByName ( const std::__cxx11::string &name ) const;
 
 private:
-    std::vector<Info> users_;
-    std::vector<Info> groups_;
+    MyVector<Info> users_;
+    MyVector<Info> groups_;
 
-    void deleteId(std::vector<Info>&vec1, std::vector<Info>&vec2, const std::__cxx11::string&name, const std::string&type);
-    void show(const std::vector<Info> &vec1, const std::vector<Info> &vec2, bool showGroups) const;
-    std::string getNameById(int id, const std::vector<Info> &vec) const;
-    int getIdByName(const std::__cxx11::string &name, const std::vector<Info> &vec) const;
+    void deleteId(MyVector<Info>&vec1, MyVector<Info>&vec2, const std::__cxx11::string&name, const std::string&type);
+    void show(const MyVector<Info> &vec1, const MyVector<Info> &vec2, bool showGroups) const;
+    std::string getNameById(int id, const MyVector<Info> &vec) const;
+    int getIdByName(const std::__cxx11::string &name, const MyVector<Info> &vec) const;
     bool getAns(const std::string &ques);
 };
 

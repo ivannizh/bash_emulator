@@ -107,13 +107,12 @@ int FilesTable::getGroup(const std::__cxx11::string &fName){
 FilesTable::~FilesTable() {
     files_[0].second = nullptr;
     files_[1].second = nullptr;
-    for(fileDescr& file: files_){
+    for(fileDescr& file: files_){ // FIXME
         if(file.second != nullptr)
             delete file.second;
     }
 }
 
-const std::vector<FilesTable::fileDescr>& FilesTable::getFiles() const
-{
+const MyVector<FilesTable::fileDescr>& FilesTable::getFiles() const {
     return files_;
 }

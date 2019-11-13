@@ -1,9 +1,9 @@
 #ifndef _PERMISSION_H
 #define _PERMISSION_H
 
-#include <vector>
 #include <iostream>
 
+#include "myvector.h"
 #include "../UserControl.h"
 
 // d rwx
@@ -64,7 +64,7 @@ private:
     const UserControl& uControl_;
     int userId_;
     int groupId_;
-    std::vector<char> p_;
+    MyVector<char> p_;
 
     void forOperators(const std::string& q, void (*func)(char&, const char&));
     bool checkPerm(int type, int user);

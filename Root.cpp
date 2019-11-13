@@ -75,7 +75,7 @@ void Root::startWork() {
                 continue;
             lParser.parse(line);
             if(comands_.count(lParser.getComand()))
-                (this->*comands_[lParser.getComand()])  ();
+                (this->*comands_[lParser.getComand()])();
             else
                 std::cout << "No command '" << lParser.getComand() << "' found" << std::endl;
         }
@@ -149,7 +149,7 @@ void Root::ls() {
 
 void Root::addUser() {
     std::string group = lParser.getParam("g");
-    std::vector<std::string> names  = lParser.getArgs();
+    MyVector<std::string> names  = lParser.getArgs();
 
 
     for(const std::string name: names)
@@ -157,14 +157,14 @@ void Root::addUser() {
 }
 
 void Root::deleteUser() {
-    std::vector<std::string> names = lParser.getArgs();
+    MyVector<std::string> names = lParser.getArgs();
 
     for(const std::string &name: names)
         uControl_.deleteUser(name);
 }
 
 void Root::deleteGroup() {
-    std::vector<std::string> names = lParser.getArgs();
+    MyVector<std::string> names = lParser.getArgs();
 
     for(const std::string &name: names)
         uControl_.deleteGroup(name);
@@ -543,7 +543,7 @@ void Root::mv() {
         return;
     }
 
-    std::vector<std::string> args = lParser.getArgs();
+    MyVector<std::string> args = lParser.getArgs();
     std::string dest = args.back();
     args.erase(args.end() - 1);
 
@@ -612,7 +612,7 @@ void Root::cp() {
         return;
     }
 
-    std::vector<std::string> args = lParser.getArgs();
+    MyVector<std::string> args = lParser.getArgs();
     std::string dest = args.back();
     args.erase(args.end() - 1);
 

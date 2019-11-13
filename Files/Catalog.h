@@ -2,9 +2,9 @@
 #define _CATALOG_H
 
 #include <iostream>
-#include <vector>
 #include <typeinfo>
 
+//#include "myvector.h"
 #include "Descriptor.h"
 #include "FilesTable.h"
 #include "File.h"
@@ -53,7 +53,6 @@ public:
     virtual ~Catalog(){}
 private:
     FilesTable fTable_;
-
     bool checkParentWritePerm(int user);
 
 };
